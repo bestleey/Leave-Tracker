@@ -67,7 +67,25 @@ let cur=new Date();
 async function load(){
  const res=await fetch(URL+"?v="+Date.now());
  const data=await res.json();
+ updateSummary(data);
  render(data);
+}
+
+function updateSummary(data){
+ let total=data.settings?.annual_total||0;
+ let used=data.entries.reduce((s,e)=>s+e.days,0);
+ let remain=total-used;
+
+ document.getElementById("total").innerText=total;
+ document.getElementById("used").innerText=used;
+ document.getElementById("remain").innerText=remain;
+
+ let box=document.getElementById("remainBox");
+ box.className="sum-box";
+
+ if(remain>=10) box.classList.add("green");
+ else if(remain>=6) box.classList.add("yellow");
+ else box.classList.add("red");
 }
 
 function render(data){
@@ -83,7 +101,8 @@ function render(data){
  let first=new Date(y,m,1).getDay();
  let last=new Date(y,m+1,0).getDate();
 
- let ranges=new Set();
+ // 🔥 연속 휴가 처리
+ let ranges=new Map();
 
  entries.forEach(e=>{
    let start=new Date(e.date);
@@ -92,7 +111,8 @@ function render(data){
    for(let i=0;i<days;i++){
      let d=new Date(start);
      d.setDate(start.getDate()+i);
-     ranges.add(d.toISOString().slice(0,10));
+     let key=d.toISOString().slice(0,10);
+     ranges.set(key,e);
    }
  });
 
@@ -108,17 +128,19 @@ function render(data){
 
   let dateStr=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
 
-  let entry=entries.find(e=>e.date===dateStr);
+  let entry=ranges.get(dateStr);
 
   cell.innerHTML=`<div class="date">${d}</div>`+(entry?`<div class="memo">${entry.memo||""}</div>`:"");
 
+  // 🔥 반차만 따로 처리
   if(entry && entry.days===0.5){
     let half=document.createElement("div");
     half.className="half";
     cell.appendChild(half);
   }
 
-  if(ranges.has(dateStr)){
+  // 🔥 연차 (1 이상만 바 표시)
+  if(entry && entry.days>=1){
     let bar=document.createElement("div");
 
     let prev=new Date(y,m,d-1).toISOString().slice(0,10);
@@ -135,6 +157,9 @@ function render(data){
   cal.appendChild(cell);
  }
 }
+
+function prev(){cur.setMonth(cur.getMonth()-1);load();}
+function next(){cur.setMonth(cur.getMonth()+1);load();}
 
 load();
 </script>
