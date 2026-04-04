@@ -4,21 +4,42 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>연차 앱 Ultimate</title>
-<link rel="manifest" href="manifest.webmanifest">
 
 <style>
-body{font-family:-apple-system;background:#f2f2f7;margin:0;padding:16px}
-h1{font-size:22px}
+body{font-family:-apple-system;background:#f2f2f7;margin:0;padding:16px;color:#161618}
 
+h1{font-size:22px;margin-bottom:10px}
+
+/* 요약 */
+.summary{display:flex;gap:10px;margin-bottom:12px}
+.sum-box{flex:1;border-radius:14px;padding:10px;text-align:center;color:#fff}
+.green{background:#34c759}
+.yellow{background:#ffcc00;color:#000}
+.red{background:#ff3b30}
+
+.sum-title{font-size:12px}
+.sum-value{font-size:20px;font-weight:600}
+
+/* 카드 */
 .card{background:rgba(255,255,255,0.7);backdrop-filter:blur(10px);
 border-radius:16px;padding:12px;margin-bottom:12px}
 
+/* 달력 */
 .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.day{background:white;border-radius:10px;padding:6px;min-height:70px;position:relative;font-size:12px}
+.day{background:white;border-radius:10px;padding:4px;min-height:75px;position:relative;font-size:12px;display:flex;flex-direction:column;justify-content:space-between}
 
-.bar-start{background:#0a58dc;border-radius:10px 0 0 10px;height:6px;position:absolute;bottom:2px;left:2px;right:2px}
-.bar-mid{background:#0a58dc;height:6px;position:absolute;bottom:2px;left:0;right:0}
-.bar-end{background:#0a58dc;border-radius:0 10px 10px 0;height:6px;position:absolute;bottom:2px;left:2px;right:2px}
+.weekend{background:#f0f0f0}
+
+.date{font-weight:600}
+
+/* 연속 바 */
+.bar{position:absolute;bottom:0;height:6px;background:#0a58dc}
+.start{left:4px;right:0;border-radius:6px 0 0 6px}
+.mid{left:0;right:0}
+.end{left:0;right:4px;border-radius:0 6px 6px 0}
+
+/* 메모 */
+.memo{font-size:10px;color:#555}
 
 </style>
 </head>
@@ -26,6 +47,13 @@ border-radius:16px;padding:12px;margin-bottom:12px}
 <body>
 
 <h1>연차 앱</h1>
+
+<div class="summary">
+ <div id="box" class="sum-box">
+   <div class="sum-title">남은 연차</div>
+   <div class="sum-value" id="remain">-</div>
+ </div>
+</div>
 
 <div class="card" id="sync">동기화 중...</div>
 
@@ -44,9 +72,24 @@ let cur=new Date();
 async function load(){
  const res=await fetch(URL+"?v="+Date.now());
  const data=await res.json();
- document.getElementById("sync").innerText="마지막 동기화: "+new Date().toLocaleTimeString();
+ updateSummary(data);
+ document.getElementById("sync").innerText="동기화: "+new Date().toLocaleTimeString();
  render(data);
- checkAlert(data);
+}
+
+function updateSummary(data){
+ let total=data.settings?.annual_total||0;
+ let used=data.entries.reduce((s,e)=>s+e.days,0);
+ let remain=total-used;
+
+ let box=document.getElementById("box");
+ box.className="sum-box";
+
+ if(remain>=10) box.classList.add("green");
+ else if(remain>=6) box.classList.add("yellow");
+ else box.classList.add("red");
+
+ document.getElementById("remain").innerText=remain;
 }
 
 function render(data){
@@ -67,28 +110,23 @@ function render(data){
  for(let d=1;d<=last;d++){
   let cell=document.createElement("div");
   cell.className="day";
-  cell.innerHTML=d;
 
-  let date=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+  let day=new Date(y,m,d).getDay();
+  if(day===0||day===6) cell.classList.add("weekend");
 
-  let match=entries.find(e=>e.date===date);
+  let dateStr=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+
+  let match=entries.find(e=>e.date===dateStr);
+
+  cell.innerHTML=`<div class="date">${d}</div>` + (match?`<div class="memo">${match.memo||""}</div>`:"");
+
   if(match){
     let bar=document.createElement("div");
-    bar.className="bar-start";
+    bar.className="bar start";
     cell.appendChild(bar);
   }
 
   cal.appendChild(cell);
- }
-}
-
-function checkAlert(data){
- let total=data.settings?.annual_total||0;
- let used=data.entries.reduce((s,e)=>s+e.days,0);
- let remain=total-used;
-
- if(remain<=5){
-  alert("⚠️ 연차 얼마 안 남았습니다!");
  }
 }
 
