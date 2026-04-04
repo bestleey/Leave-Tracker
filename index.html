@@ -29,11 +29,39 @@ h1{margin-bottom:10px}
 .sun{background:#ffd6d6;color:#b00000}
 .sat{background:#d6e8ff;color:#0047b3}
 
-.bar{position:absolute;bottom:0;height:6px;background:#0a58dc}
-.start{left:0;right:50%;border-radius:6px 0 0 6px}
-.mid{left:0;right:0}
-.end{left:50%;right:0;border-radius:0 6px 6px 0}
-.single{left:0;right:0;border-radius:6px}
+.bar{
+ position:absolute;
+ bottom:0;
+ height:6px;
+ background:#0a58dc;
+}
+
+/* 시작 */
+.start{
+ left:0;
+ right:0;
+ border-radius:6px 0 0 6px;
+}
+
+/* 중간 */
+.mid{
+ left:0;
+ right:0;
+}
+
+/* 끝 */
+.end{
+ left:0;
+ right:0;
+ border-radius:0 6px 6px 0;
+}
+
+/* 단일 */
+.single{
+ left:0;
+ right:0;
+ border-radius:6px;
+}
 
 .half{position:absolute;bottom:0;left:0;width:50%;height:6px;background:#34c759;border-radius:6px}
 
@@ -109,16 +137,26 @@ function render(data){
  const entries=data.entries||[];
 
  const ranges=new Set();
- entries.forEach(e=>{
-   let start=new Date(e.date);
-   let days=Math.ceil(e.days||1);
-   for(let i=0;i<days;i++){
-     let d=new Date(start);
-     d.setDate(start.getDate()+i);
-     ranges.add(d.toISOString().slice(0,10));
-   }
- });
 
+entries.forEach(e=>{
+ let start=new Date(e.date);
+ let days=Math.ceil(e.days||1);
+
+ let count=0;
+ let d=new Date(start);
+
+ while(count < days){
+   let day = d.getDay();
+
+   // 🔥 주말 제외
+   if(day !== 0 && day !== 6){
+     ranges.add(d.toISOString().slice(0,10));
+     count++;
+   }
+
+   d.setDate(d.getDate()+1);
+ }
+});
  for(let i=0;i<first;i++) cal.appendChild(document.createElement("div"));
 
  for(let d=1;d<=last;d++){
