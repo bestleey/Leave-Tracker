@@ -1,62 +1,56 @@
-<!DOCTYPE html>
-<html lang="ko"><head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#f5f5f7" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="default" />
-<meta name="apple-mobile-web-app-title" content="연차 확인" />
-<title>연차 확인</title>
-<link rel="manifest" href="./manifest.webmanifest" />
-<link rel="apple-touch-icon" href="./icon-180.png" />
-<style>
-:root{--bg:#f5f5f7;--panel:#fff;--soft:#f7f9fc;--line:#e5e5ea;--text:#1d1d1f;--muted:#6e6e73;--accent:#0071e3;--accent-soft:#eaf3ff;--green:#1d7f42;--orange:#9b6400;--red:#b42318;--green-bg:#e7f6eb;--orange-bg:#fff5e6;--red-bg:#fdeceb;--radius:18px}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Helvetica Neue",sans-serif}body{min-height:100vh}.wrap{max-width:920px;margin:0 auto;padding:14px 14px 28px}.hero{padding:8px 2px 6px}.hero h1{margin:0 0 6px;font-size:30px;line-height:1.05;font-weight:800;letter-spacing:-.03em}.hero p{margin:0;color:var(--muted);font-size:14px;line-height:1.5}.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-top:12px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.btn{appearance:none;border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:12px 14px;font-size:15px;font-weight:700;line-height:1}.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn.file{position:relative;overflow:hidden}.btn.file input{position:absolute;inset:0;opacity:0}.meta{margin-top:10px;color:var(--muted);font-size:13px;line-height:1.5;white-space:pre-wrap}.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat{background:var(--soft);border:1px solid #edf0f4;border-radius:16px;padding:14px}.stat .label{color:var(--muted);font-size:13px;margin-bottom:8px}.stat .value{font-size:28px;font-weight:800;letter-spacing:-.03em}.status-chip{display:inline-flex;align-items:center;border-radius:999px;padding:7px 10px;font-size:13px;font-weight:700;margin-top:10px}.status-green{background:var(--green-bg);color:var(--green)}.status-orange{background:var(--orange-bg);color:var(--orange)}.status-red{background:var(--red-bg);color:var(--red)}.section-title{font-size:17px;font-weight:800;margin:0 0 10px}.month-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.month-title{font-size:18px;font-weight:800}.month-btn{border:1px solid var(--line);background:var(--soft);border-radius:12px;padding:10px 12px;font-size:15px;font-weight:800}.calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}.weekday{padding:8px 0;text-align:center;color:var(--muted);font-size:12px;font-weight:700}.weekday.sun,.daynum.sun{color:#d12d2d}.weekday.sat,.daynum.sat{color:#2d6cdf}.cell{min-height:86px;border:1px solid #edf0f4;background:var(--soft);border-radius:14px;padding:6px;display:flex;flex-direction:column;gap:4px}.cell.empty{background:transparent;border:1px dashed transparent}.cell.has{background:#f8fbff;border-color:#d8e7fb}.cell.today{outline:2px solid var(--accent)}.cell-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px}.daynum{font-size:13px;font-weight:800;padding:2px 6px;border-radius:999px}.cell.has .daynum{background:#dcecff;color:var(--accent)}.sumchip{font-size:11px;font-weight:800;background:var(--accent-soft);color:var(--accent);padding:3px 6px;border-radius:999px;white-space:nowrap}.leave-list{display:grid;gap:4px}.leave-bar{background:#dbeafe;border:1px solid #bfd8ff;border-radius:10px;padding:4px 6px}.leave-type{font-size:12px;font-weight:800;color:var(--accent)}.leave-memo{font-size:11px;color:var(--muted);line-height:1.2;margin-top:2px}.tabbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.tab{border:1px solid var(--line);background:var(--soft);color:var(--text);border-radius:999px;padding:9px 12px;font-size:13px;font-weight:700}.tab.active{background:var(--accent);border-color:var(--accent);color:#fff}.records{display:grid;gap:10px}.record{background:var(--soft);border:1px solid #edf0f4;border-radius:14px;padding:13px 14px}.record-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:6px}.record-date{font-size:14px;font-weight:700}.record-type{color:var(--muted);font-size:13px;font-weight:600;white-space:nowrap}.record-memo{color:var(--muted);font-size:14px;line-height:1.45}.empty{text-align:center;color:var(--muted);font-size:14px;padding:24px 8px}.install-tip{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.5}.row{display:grid;gap:12px}@media (min-width:720px){.hero h1{font-size:34px}.stats{grid-template-columns:repeat(4,minmax(0,1fr))}.row{grid-template-columns:1.1fr .9fr}.cell{min-height:100px}.leave-type{font-size:13px}.leave-memo{font-size:12px}}
-</style></head>
-<body><div class="wrap">
-<div class="hero"><h1>연차 확인</h1><p>기본적으로 같은 저장소 루트의 <strong>leave_data.json</strong> 을 자동으로 불러옵니다.</p></div>
-<div class="card"><div class="toolbar">
-<button class="btn primary" id="reloadBtn" type="button">자동 새로고침</button>
-<label class="btn file">JSON 직접 선택<input id="fileInput" type="file" accept=".json,application/json" /></label>
-<button class="btn" id="clearBtn" type="button">저장된 데이터 지우기</button>
-</div><div class="meta" id="metaText">같은 저장소 루트의 leave_data.json 을 자동으로 읽습니다.</div><div class="install-tip">Safari에서 <strong>Share → Add to Home Screen</strong> 로 추가하세요.</div></div>
-<div class="card" id="summaryCard" style="display:none;"><div class="stats">
-<div class="stat"><div class="label">총 연차</div><div class="value" id="totalVal">0</div></div>
-<div class="stat"><div class="label">사용 연차</div><div class="value" id="usedVal">0</div></div>
-<div class="stat"><div class="label">남은 연차</div><div class="value" id="remainVal">0</div></div>
-<div class="stat"><div class="label">기록 수</div><div class="value" id="countVal">0</div></div>
-</div><div id="statusChip" class="status-chip status-green" style="display:none;"></div></div>
-<div class="row">
-<div class="card"><div class="month-bar"><button class="month-btn" id="prevMonth">◀</button><div class="month-title" id="monthTitle">월별 보기</div><button class="month-btn" id="nextMonth">▶</button></div><div class="calendar" id="calendar"></div></div>
-<div class="card"><h2 class="section-title">최근 기록</h2><div class="tabbar">
-<button class="tab active" data-filter="all">전체</button><button class="tab" data-filter="30">최근 30일</button><button class="tab" data-filter="90">최근 90일</button><button class="tab" data-filter="year">올해</button>
-</div><div id="records" class="records"><div class="empty">데이터를 불러오면 최근 기록이 표시됩니다.</div></div></div>
-</div></div>
-<script src="./config.js"></script>
-<script>
-const STORAGE_KEY="leave-tracker-viewer-data-v4",META_KEY="leave-tracker-viewer-meta-v4";
-const AUTO_JSON_URL=(window.LEAVE_TRACKER_JSON_URL||"./leave_data.json").trim();
-const state={data:null,currentMonth:null,currentFilter:"all"};
-const fileInput=document.getElementById("fileInput"),summaryCard=document.getElementById("summaryCard"),metaText=document.getElementById("metaText"),recordsEl=document.getElementById("records"),statusChip=document.getElementById("statusChip"),monthTitle=document.getElementById("monthTitle"),calendarEl=document.getElementById("calendar");
-function fmt(n){const v=Number(n||0);return Number.isInteger(v)?String(v):String(v).replace(/\.0+$/,"")} function toDate(s){return s?new Date(s+"T00:00:00"):null} function ymd(d){return d.toISOString().slice(0,10)}
-function getDateRange(e){const s=e.date||"",d=Number(e.days||0);if(!s||!d||d<=1)return s;return `${s} · ${fmt(d)}일`}
-function persist(data,meta){localStorage.setItem(STORAGE_KEY,JSON.stringify(data));localStorage.setItem(META_KEY,JSON.stringify(meta))}
-function clearStored(){localStorage.removeItem(STORAGE_KEY);localStorage.removeItem(META_KEY);state.data=null;summaryCard.style.display="none";statusChip.style.display="none";recordsEl.innerHTML='<div class="empty">데이터를 불러오면 최근 기록이 표시됩니다.</div>';calendarEl.innerHTML="";metaText.textContent=`자동 로딩 주소: ${AUTO_JSON_URL}`;fileInput.value=""}
-function getFilterEntries(entries){const now=new Date();if(state.currentFilter==="all")return entries;if(state.currentFilter==="30"){const c=new Date();c.setDate(now.getDate()-30);return entries.filter(x=>toDate(x.date)>=c)}if(state.currentFilter==="90"){const c=new Date();c.setDate(now.getDate()-90);return entries.filter(x=>toDate(x.date)>=c)}if(state.currentFilter==="year"){return entries.filter(x=>{const d=toDate(x.date);return d&&d.getFullYear()===now.getFullYear()})}return entries}
-function monthLabel(d){return `${d.getFullYear()}년 ${d.getMonth()+1}월`}
-function buildMonthMap(entries,y,m){const map={};for(const e of entries){const d=toDate(e.date);if(!d)continue;if(d.getFullYear()===y&&d.getMonth()===m){const k=d.getDate();if(!map[k])map[k]=[];map[k].push(e)}}return map}
-function renderCalendar(entries){if(!state.currentMonth){const b=entries[0]&&entries[0].date?toDate(entries[0].date):new Date();state.currentMonth=new Date(b.getFullYear(),b.getMonth(),1)}const y=state.currentMonth.getFullYear(),m=state.currentMonth.getMonth();monthTitle.textContent=monthLabel(state.currentMonth);calendarEl.innerHTML="";["일","월","화","수","목","금","토"].forEach((wd,idx)=>{const d=document.createElement("div");d.className="weekday"+(idx===0?" sun":idx===6?" sat":"");d.textContent=wd;calendarEl.appendChild(d)});const first=new Date(y,m,1),startDay=first.getDay(),lastDate=new Date(y,m+1,0).getDate(),today=ymd(new Date()),monthMap=buildMonthMap(entries,y,m);for(let i=0;i<42;i++){const dayNum=i-startDay+1;if(dayNum<1||dayNum>lastDate){const empty=document.createElement("div");empty.className="cell empty";calendarEl.appendChild(empty);continue}const items=monthMap[dayNum]||[],dateKey=`${y}-${String(m+1).padStart(2,"0")}-${String(dayNum).padStart(2,"0")}`,cell=document.createElement("div");cell.className="cell"+(items.length?" has":"")+(dateKey===today?" today":"");const top=document.createElement("div");top.className="cell-top";const num=document.createElement("div");num.className="daynum"+(new Date(y,m,dayNum).getDay()===0?" sun":new Date(y,m,dayNum).getDay()===6?" sat":"");num.textContent=dayNum;top.appendChild(num);if(items.length){const sum=items.reduce((a,it)=>a+Number(it.days||0),0),chip=document.createElement("div");chip.className="sumchip";chip.textContent=`${fmt(sum)}일`;top.appendChild(chip)}cell.appendChild(top);const list=document.createElement("div");list.className="leave-list";items.slice(0,2).forEach(it=>{const bar=document.createElement("div");bar.className="leave-bar";const type=document.createElement("div");type.className="leave-type";type.textContent=it.type||"연차";const memo=document.createElement("div");memo.className="leave-memo";memo.textContent=it.memo&&String(it.memo).trim()?String(it.memo).trim():"메모 없음";bar.appendChild(type);bar.appendChild(memo);list.appendChild(bar)});cell.appendChild(list);calendarEl.appendChild(cell)}}
-function renderRecords(entries){const filtered=getFilterEntries(entries),sorted=[...filtered].sort((a,b)=>String(b.date||"").localeCompare(String(a.date||"")));recordsEl.innerHTML="";if(!sorted.length){recordsEl.innerHTML='<div class="empty">선택한 조건의 기록이 없습니다.</div>';return}for(const e of sorted.slice(0,40)){const card=document.createElement("div");card.className="record";const memo=e.memo&&String(e.memo).trim()?String(e.memo).trim():"메모 없음",type=e.type||"연차";card.innerHTML=`<div class="record-top"><div class="record-date">${getDateRange(e)}</div><div class="record-type">${type} · ${fmt(e.days)}일</div></div><div class="record-memo">${memo}</div>`;recordsEl.appendChild(card)}}
-function renderSummary(data,meta){const settings=data.settings||{},entries=Array.isArray(data.entries)?data.entries:[],total=Number(settings.annual_total||15),used=entries.reduce((s,x)=>s+Number(x.days||0),0),remain=total-used;document.getElementById("totalVal").textContent=fmt(total);document.getElementById("usedVal").textContent=fmt(used);document.getElementById("remainVal").textContent=fmt(remain);document.getElementById("countVal").textContent=String(entries.length);summaryCard.style.display="block";let chipClass="status-green",chipText="여유 있음";if(remain<6){chipClass="status-red";chipText="적음"}else if(remain<10){chipClass="status-orange";chipText="주의"}statusChip.className=`status-chip ${chipClass}`;statusChip.textContent=`상태 · ${chipText}`;statusChip.style.display="inline-flex";const source=meta.fileName?`불러온 파일: ${meta.fileName}`:(meta.url?`자동 로딩 주소: ${meta.url}`:"저장된 데이터 불러옴"),loadedAt=meta.loadedAt?`\n불러온 시각: ${meta.loadedAt}`:"";metaText.textContent=source+loadedAt}
-function renderAll(data,meta){state.data=data;const entries=Array.isArray(data.entries)?data.entries:[];renderSummary(data,meta);renderCalendar(entries);renderRecords(entries)}
-async function loadFromUrl(showAlert=false){try{const sep=AUTO_JSON_URL.includes("?")?"&":"?";const url=`${AUTO_JSON_URL}${sep}ts=${Date.now()}`;const res=await fetch(url,{cache:"no-store"});if(!res.ok)throw new Error("HTTP "+res.status);const data=await res.json(),meta={url:AUTO_JSON_URL,loadedAt:new Date().toLocaleString("ko-KR")};persist(data,meta);state.currentMonth=null;renderAll(data,meta)}catch(err){if(showAlert)alert("자동 로딩에 실패했습니다. 같은 저장소 루트에 leave_data.json 이 있는지 확인해 주세요.")}}
-document.getElementById("prevMonth").addEventListener("click",()=>{if(!state.currentMonth||!state.data)return;state.currentMonth=new Date(state.currentMonth.getFullYear(),state.currentMonth.getMonth()-1,1);renderCalendar(state.data.entries||[])});
-document.getElementById("nextMonth").addEventListener("click",()=>{if(!state.currentMonth||!state.data)return;state.currentMonth=new Date(state.currentMonth.getFullYear(),state.currentMonth.getMonth()+1,1);renderCalendar(state.data.entries||[])});
-document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));btn.classList.add("active");state.currentFilter=btn.dataset.filter;if(state.data)renderRecords(state.data.entries||[])}));
-fileInput.addEventListener("change",async (event)=>{const file=event.target.files&&event.target.files[0];if(!file)return;try{const text=await file.text(),data=JSON.parse(text),meta={fileName:file.name,loadedAt:new Date().toLocaleString("ko-KR")};persist(data,meta);state.currentMonth=null;renderAll(data,meta)}catch(err){alert("JSON 파일을 읽는 중 오류가 발생했습니다. leave_data.json 파일인지 확인해 주세요.")}});
-document.getElementById("clearBtn").addEventListener("click",clearStored);
-document.getElementById("reloadBtn").addEventListener("click",()=>loadFromUrl(true));
-const saved=localStorage.getItem(STORAGE_KEY),savedMeta=localStorage.getItem(META_KEY);if(saved){try{renderAll(JSON.parse(saved),savedMeta?JSON.parse(savedMeta):{})}catch(_){clearStored()}}
-loadFromUrl(false);
-if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(()=>{}))}
-</script></body></html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.4">
+  <style type="text/css">
+    body {background-color: #f2f2f5}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px 'Apple SD Gothic Neo'; color: #5b5b60; -webkit-text-stroke: #5b5b60}
+    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 15.0px 'Apple SD Gothic Neo'; color: #ffffff; -webkit-text-stroke: #ffffff; background-color: #0a58dc}
+    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px 'Helvetica Neue'; color: #161618; -webkit-text-stroke: #161618}
+    p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px 'Helvetica Neue'; color: #161618; -webkit-text-stroke: #161618; min-height: 13.0px}
+    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 15.0px '.AppleKoreanFont'; color: #161618; -webkit-text-stroke: #161618; background-color: #ffffff}
+    p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Helvetica Neue'; color: #5b5b60; -webkit-text-stroke: #5b5b60}
+    p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 15.0px 'Helvetica Neue'; color: #000000; color: rgba(0, 0, 0, 0.85); -webkit-text-stroke: rgba(0, 0, 0, 0.85); background-color: #f5f7fb}
+    p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px 'Apple SD Gothic Neo'; color: #161618; -webkit-text-stroke: #161618}
+    p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.0px 'Apple SD Gothic Neo'; color: #ffffff; -webkit-text-stroke: #ffffff; background-color: #0a58dc}
+    p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.0px 'Helvetica Neue'; color: #161618; -webkit-text-stroke: #161618; background-color: #f5f7fb}
+    p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.0px 'Apple SD Gothic Neo'; color: #161618; -webkit-text-stroke: #161618; background-color: #f5f7fb}
+    p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 14.0px 'Apple SD Gothic Neo'; color: #5b5b60; -webkit-text-stroke: #5b5b60}
+    span.s1 {font-kerning: none}
+    span.s2 {font: 34.0px 'Helvetica Neue'; font-kerning: none}
+    span.s3 {font: 14.0px 'Helvetica Neue'; font-kerning: none}
+    span.s4 {font: 15.0px '.AppleKoreanFont'; font-kerning: none}
+    span.s5 {font: 15.0px 'Helvetica Neue'; font-kerning: none}
+    span.s6 {font-kerning: none; background-color: #ffffff}
+    span.s7 {font: 15.0px '.AppleKoreanFont'; font-kerning: none; background-color: #ffffff}
+    span.s8 {font: 13.0px 'Apple SD Gothic Neo'; font-kerning: none; background-color: #ffffff}
+    span.s9 {font: 18.0px 'Helvetica Neue'; font-kerning: none; background-color: #ffffff}
+    span.s10 {font: 17.0px 'Helvetica Neue'; font-kerning: none; background-color: #ffffff}
+    span.s11 {font: 13.0px '.AppleKoreanFont'; font-kerning: none}
+    span.s12 {font: 14.0px 'Helvetica Neue'; font-kerning: none; background-color: #ffffff}
+  </style>
+</head>
+<body>
+<h1 style="margin: 0.0px 0.0px 6.0px 0.0px; font: 34.0px 'Apple SD Gothic Neo'; color: #161618; -webkit-text-stroke: #161618"><span class="s1">연차</span><span class="s2"> </span><span class="s1">확인 V5 테스트</span></h1>
+<p class="p2"><span class="s1">기본적으로</span><span class="s3"> </span><span class="s1">같은</span><span class="s3"> </span><span class="s1">저장소</span><span class="s3"> </span><span class="s1">루트의</span><span class="s3"> <b>leave_data.json</b> </span><span class="s1">을</span><span class="s3"> </span><span class="s1">자동으로</span><span class="s3"> </span><span class="s1">불러옵니다</span><span class="s3">.</span></p>
+<p class="p3"><span class="s4"><b>자동</b></span><span class="s5"><b> </b></span><span class="s4"><b>새로고침</b><b></b></span></p>
+<p class="p4"><span class="s6"><b>JSON </b></span><span class="s7"><b>직접</b></span><span class="s6"><b> </b></span><span class="s7"><b>선택</b><b></b></span></p>
+<p class="p5"><span class="s1"></span><br></p>
+<p class="p6"><span class="s1"><b>저장된</b></span><span class="s5"><b> </b></span><span class="s1"><b>데이터</b></span><span class="s5"><b> </b></span><span class="s1"><b>지우기</b><b></b></span></p>
+<p class="p7"><span class="s8">같은</span><span class="s6"> </span><span class="s8">저장소</span><span class="s6"> </span><span class="s8">루트의</span><span class="s6"> leave_data.json </span><span class="s8">을</span><span class="s6"> </span><span class="s8">자동으로</span><span class="s6"> </span><span class="s8">읽습니다</span><span class="s6">.</span></p>
+<p class="p7"><span class="s6">Safari</span><span class="s8">에서</span><span class="s6"> <b>Share → Add to Home Screen</b> </span><span class="s8">로</span><span class="s6"> </span><span class="s8">추가하세요</span><span class="s6">.</span></p>
+<p class="p8"><span class="s1">◀</span></p>
+<p class="p9"><span class="s6">월별</span><span class="s9"> </span><span class="s6">보기</span></p>
+<p class="p8"><span class="s1">▶</span></p>
+<h2 style="margin: 0.0px 0.0px 10.0px 0.0px; font: 17.0px '.AppleKoreanFont'; color: #161618; -webkit-text-stroke: #161618"><span class="s6"><b>최근</b></span><span class="s10"><b> </b></span><span class="s6"><b>기록</b><b></b></span></h2>
+<p class="p11"><span class="s11"><b>전체</b><b></b></span></p>
+<p class="p12"><span class="s11"><b>최근</b></span><span class="s1"><b> 30</b></span><span class="s11"><b>일</b><b></b></span></p>
+<p class="p12"><span class="s11"><b>최근</b></span><span class="s1"><b> 90</b></span><span class="s11"><b>일</b><b></b></span></p>
+<p class="p13"><span class="s11"><b>올해</b><b></b></span></p>
+<p class="p14"><span class="s6">데이터를</span><span class="s12"> </span><span class="s6">불러오면</span><span class="s12"> </span><span class="s6">최근</span><span class="s12"> </span><span class="s6">기록이</span><span class="s12"> </span><span class="s6">표시됩니다</span><span class="s12">.</span></p>
+</body>
+</html>
