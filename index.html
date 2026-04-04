@@ -12,197 +12,413 @@
   <link rel="apple-touch-icon" href="./icon-180.png" />
   <style>
     :root {
-      --bg: #f5f5f7; --panel: #ffffff; --line: #e5e5ea; --text: #1d1d1f; --muted: #6e6e73;
-      --accent: #0071e3; --soft: #f7f9fc; --green: #1d7f42; --orange: #9b6400; --red: #b42318;
-      --green-bg: #e7f6eb; --orange-bg: #fff5e6; --red-bg: #fdeceb;
+      --bg:#f5f5f7; --panel:#fff; --soft:#f7f9fc; --line:#e5e5ea; --text:#1d1d1f; --muted:#6e6e73;
+      --accent:#0071e3; --accent-soft:#eaf3ff; --green:#1d7f42; --orange:#9b6400; --red:#b42318;
+      --green-bg:#e7f6eb; --orange-bg:#fff5e6; --red-bg:#fdeceb; --radius:18px;
+      --shadow:0 1px 0 rgba(0,0,0,.02);
     }
-    * { box-sizing: border-box; }
-    html, body { margin:0; padding:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Helvetica Neue",sans-serif; }
-    .wrap { max-width:880px; margin:0 auto; padding:16px 14px 28px; }
-    .hero { padding:8px 2px 10px; }
-    .hero h1 { margin:0 0 6px; font-size:30px; line-height:1.1; font-weight:800; letter-spacing:-0.03em; }
-    .hero p { margin:0; color:var(--muted); font-size:14px; line-height:1.5; }
-    .card { background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:16px; margin-top:12px; }
-    .toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    .btn { appearance:none; border:1px solid var(--line); background:var(--panel); color:var(--text); border-radius:12px; padding:12px 14px; font-size:15px; font-weight:600; line-height:1; }
-    .btn.primary { background:var(--accent); color:white; border-color:var(--accent); }
-    .btn.file { position:relative; overflow:hidden; }
-    .btn.file input { position:absolute; inset:0; opacity:0; width:100%; height:100%; }
-    .meta { margin-top:10px; color:var(--muted); font-size:13px; line-height:1.5; white-space:pre-wrap; }
-    .stats { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-    .stat { background:var(--soft); border:1px solid #edf0f4; border-radius:16px; padding:14px; }
-    .stat .label { color:var(--muted); font-size:13px; margin-bottom:8px; }
-    .stat .value { font-size:28px; font-weight:800; letter-spacing:-0.03em; }
-    .status-chip { display:inline-flex; align-items:center; border-radius:999px; padding:7px 10px; font-size:13px; font-weight:700; margin-top:10px; }
-    .status-green { background:var(--green-bg); color:var(--green); }
-    .status-orange { background:var(--orange-bg); color:var(--orange); }
-    .status-red { background:var(--red-bg); color:var(--red); }
-    .section-title { font-size:17px; font-weight:800; margin:0 0 10px; }
-    .records { display:grid; gap:10px; }
-    .record { background:var(--soft); border:1px solid #edf0f4; border-radius:14px; padding:13px 14px; }
-    .record-top { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; margin-bottom:6px; }
-    .record-date { font-size:14px; font-weight:700; line-height:1.3; }
-    .record-type { color:var(--muted); font-size:13px; font-weight:600; white-space:nowrap; }
-    .record-memo { color:var(--muted); font-size:14px; line-height:1.45; }
-    .empty { text-align:center; color:var(--muted); font-size:14px; padding:24px 8px; }
-    .install-tip { margin-top:8px; color:var(--muted); font-size:13px; line-height:1.5; }
-    @media (min-width:720px) { .stats { grid-template-columns:repeat(4,minmax(0,1fr)); } .hero h1 { font-size:34px; } }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Helvetica Neue",sans-serif}
+    body{min-height:100vh}
+    .wrap{max-width:920px;margin:0 auto;padding:14px 14px 28px}
+    .hero{padding:8px 2px 6px}
+    .hero h1{margin:0 0 6px;font-size:30px;line-height:1.05;font-weight:800;letter-spacing:-.03em}
+    .hero p{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-top:12px;box-shadow:var(--shadow)}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{appearance:none;border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:12px 14px;font-size:15px;font-weight:700;line-height:1}
+    .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+    .btn.file{position:relative;overflow:hidden}
+    .btn.file input{position:absolute;inset:0;opacity:0}
+    .meta{margin-top:10px;color:var(--muted);font-size:13px;line-height:1.5;white-space:pre-wrap}
+    .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .stat{background:var(--soft);border:1px solid #edf0f4;border-radius:16px;padding:14px}
+    .stat .label{color:var(--muted);font-size:13px;margin-bottom:8px}
+    .stat .value{font-size:28px;font-weight:800;letter-spacing:-.03em}
+    .status-chip{display:inline-flex;align-items:center;border-radius:999px;padding:7px 10px;font-size:13px;font-weight:700;margin-top:10px}
+    .status-green{background:var(--green-bg);color:var(--green)}
+    .status-orange{background:var(--orange-bg);color:var(--orange)}
+    .status-red{background:var(--red-bg);color:var(--red)}
+    .section-title{font-size:17px;font-weight:800;margin:0 0 10px}
+    .month-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+    .month-title{font-size:18px;font-weight:800;letter-spacing:-.02em}
+    .month-btn{border:1px solid var(--line);background:var(--soft);border-radius:12px;padding:10px 12px;font-size:15px;font-weight:800}
+    .calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+    .weekday{padding:8px 0;text-align:center;color:var(--muted);font-size:12px;font-weight:700}
+    .weekday.sun,.daynum.sun{color:#d12d2d}.weekday.sat,.daynum.sat{color:#2d6cdf}
+    .cell{min-height:86px;border:1px solid #edf0f4;background:var(--soft);border-radius:14px;padding:6px;display:flex;flex-direction:column;gap:4px}
+    .cell.empty{background:transparent;border:1px dashed transparent}
+    .cell.has{background:#f8fbff;border-color:#d8e7fb}
+    .cell.today{outline:2px solid var(--accent);outline-offset:0}
+    .cell-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px}
+    .daynum{font-size:13px;font-weight:800;padding:2px 6px;border-radius:999px}
+    .cell.has .daynum{background:#dcecff;color:var(--accent)}
+    .sumchip{font-size:11px;font-weight:800;background:var(--accent-soft);color:var(--accent);padding:3px 6px;border-radius:999px;white-space:nowrap}
+    .leave-list{display:grid;gap:4px}
+    .leave-bar{background:#dbeafe;border:1px solid #bfd8ff;border-radius:10px;padding:4px 6px}
+    .leave-type{font-size:12px;font-weight:800;color:var(--accent);line-height:1.15}
+    .leave-memo{font-size:11px;color:var(--muted);line-height:1.2;margin-top:2px}
+    .tabbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+    .tab{border:1px solid var(--line);background:var(--soft);color:var(--text);border-radius:999px;padding:9px 12px;font-size:13px;font-weight:700}
+    .tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+    .records{display:grid;gap:10px}
+    .record{background:var(--soft);border:1px solid #edf0f4;border-radius:14px;padding:13px 14px}
+    .record-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:6px}
+    .record-date{font-size:14px;font-weight:700;line-height:1.35}
+    .record-type{color:var(--muted);font-size:13px;font-weight:600;white-space:nowrap}
+    .record-memo{color:var(--muted);font-size:14px;line-height:1.45}
+    .empty{text-align:center;color:var(--muted);font-size:14px;padding:24px 8px}
+    .install-tip{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.5}
+    .row{display:grid;gap:12px}
+    @media (min-width:720px){
+      .hero h1{font-size:34px}
+      .stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+      .row{grid-template-columns:1.1fr .9fr}
+      .cell{min-height:100px}
+      .leave-type{font-size:13px}
+      .leave-memo{font-size:12px}
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="hero">
-      <h1>연차 확인</h1>
-      <p>아이폰에서는 확인 전용으로 쓰는 웹앱입니다. Google Drive 또는 파일 앱에서 <strong>leave_data.json</strong> 파일을 선택해 주세요.</p>
-    </div>
-
-    <div class="card">
-      <div class="toolbar">
-        <label class="btn primary file">JSON 불러오기<input id="fileInput" type="file" accept=".json,application/json" /></label>
-        <button class="btn" id="clearBtn" type="button">불러온 데이터 지우기</button>
-      </div>
-      <div class="meta" id="metaText">아직 불러온 파일이 없습니다.</div>
-      <div class="install-tip">홈 화면에 추가하려면 Safari에서 이 페이지를 열고 <strong>공유 → 홈 화면에 추가</strong>를 눌러 주세요.</div>
-    </div>
-
-    <div class="card" id="summaryCard" style="display:none;">
-      <div class="stats">
-        <div class="stat"><div class="label">총 연차</div><div class="value" id="totalVal">0</div></div>
-        <div class="stat"><div class="label">사용 연차</div><div class="value" id="usedVal">0</div></div>
-        <div class="stat"><div class="label">남은 연차</div><div class="value" id="remainVal">0</div></div>
-        <div class="stat"><div class="label">기록 수</div><div class="value" id="countVal">0</div></div>
-      </div>
-      <div id="statusChip" class="status-chip status-green" style="display:none;"></div>
-    </div>
-
-    <div class="card">
-      <h2 class="section-title">사용 기록</h2>
-      <div id="records" class="records"><div class="empty">JSON 파일을 불러오면 기록이 여기에 표시됩니다.</div></div>
-    </div>
+<div class="wrap">
+  <div class="hero">
+    <h1>연차 확인</h1>
+    <p>아이폰 홈 화면에 추가해서 확인 전용 앱처럼 쓸 수 있습니다. 자동 로딩 URL이 설정되어 있으면 열자마자 데이터를 불러옵니다.</p>
   </div>
 
-  <script>
-    const STORAGE_KEY = "leave-tracker-viewer-data";
-    const META_KEY = "leave-tracker-viewer-meta";
-    const fileInput = document.getElementById("fileInput");
-    const clearBtn = document.getElementById("clearBtn");
-    const summaryCard = document.getElementById("summaryCard");
-    const metaText = document.getElementById("metaText");
-    const recordsEl = document.getElementById("records");
-    const statusChip = document.getElementById("statusChip");
+  <div class="card">
+    <div class="toolbar">
+      <button class="btn primary" id="reloadBtn" type="button">자동 새로고침</button>
+      <label class="btn file">JSON 직접 선택<input id="fileInput" type="file" accept=".json,application/json" /></label>
+      <button class="btn" id="clearBtn" type="button">저장된 데이터 지우기</button>
+    </div>
+    <div class="meta" id="metaText">자동 로딩 URL이 설정되어 있으면 앱을 열 때 자동으로 데이터를 불러옵니다.</div>
+    <div class="install-tip">Safari에서 열고 <strong>Share → Add to Home Screen</strong> 를 누르면 앱처럼 실행할 수 있습니다.</div>
+  </div>
 
-    function fmt(n) {
-      const v = Number(n || 0);
-      return Number.isInteger(v) ? String(v) : String(v).replace(/\.0+$/, "");
-    }
+  <div class="card" id="summaryCard" style="display:none;">
+    <div class="stats">
+      <div class="stat"><div class="label">총 연차</div><div class="value" id="totalVal">0</div></div>
+      <div class="stat"><div class="label">사용 연차</div><div class="value" id="usedVal">0</div></div>
+      <div class="stat"><div class="label">남은 연차</div><div class="value" id="remainVal">0</div></div>
+      <div class="stat"><div class="label">기록 수</div><div class="value" id="countVal">0</div></div>
+    </div>
+    <div id="statusChip" class="status-chip status-green" style="display:none;"></div>
+  </div>
 
-    function getDateRange(entry) {
-      const start = entry.date || "";
-      const days = Number(entry.days || 0);
-      if (!start || !days || days <= 1) return start;
-      return `${start} · ${fmt(days)}일`;
-    }
+  <div class="row">
+    <div class="card">
+      <div class="month-bar">
+        <button class="month-btn" id="prevMonth">◀</button>
+        <div class="month-title" id="monthTitle">월별 보기</div>
+        <button class="month-btn" id="nextMonth">▶</button>
+      </div>
+      <div class="calendar" id="calendar"></div>
+    </div>
 
-    function render(data, meta = {}) {
-      const settings = data.settings || {};
-      const entries = Array.isArray(data.entries) ? data.entries : [];
-      const total = Number(settings.annual_total || 15);
-      const used = entries.reduce((sum, x) => sum + Number(x.days || 0), 0);
-      const remain = total - used;
+    <div class="card">
+      <h2 class="section-title">최근 기록</h2>
+      <div class="tabbar">
+        <button class="tab active" data-filter="all">전체</button>
+        <button class="tab" data-filter="30">최근 30일</button>
+        <button class="tab" data-filter="90">최근 90일</button>
+        <button class="tab" data-filter="year">올해</button>
+      </div>
+      <div id="records" class="records">
+        <div class="empty">데이터를 불러오면 최근 기록이 표시됩니다.</div>
+      </div>
+    </div>
+  </div>
+</div>
 
-      document.getElementById("totalVal").textContent = fmt(total);
-      document.getElementById("usedVal").textContent = fmt(used);
-      document.getElementById("remainVal").textContent = fmt(remain);
-      document.getElementById("countVal").textContent = String(entries.length);
-      summaryCard.style.display = "block";
+<script src="./config.js"></script>
+<script>
+const STORAGE_KEY = "leave-tracker-viewer-data-v2";
+const META_KEY = "leave-tracker-viewer-meta-v2";
+const AUTO_JSON_URL = (window.LEAVE_TRACKER_JSON_URL || "").trim();
 
-      let chipClass = "status-green";
-      let chipText = "여유 있음";
-      if (remain < 6) {
-        chipClass = "status-red";
-        chipText = "적음";
-      } else if (remain < 10) {
-        chipClass = "status-orange";
-        chipText = "주의";
-      }
-      statusChip.className = `status-chip ${chipClass}`;
-      statusChip.textContent = `상태 · ${chipText}`;
-      statusChip.style.display = "inline-flex";
+const state = { data:null, currentMonth:null, currentFilter:"all" };
 
-      const source = meta.fileName ? `불러온 파일: ${meta.fileName}` : "저장된 데이터 불러옴";
-      const loadedAt = meta.loadedAt ? `\n불러온 시각: ${meta.loadedAt}` : "";
-      metaText.textContent = source + loadedAt;
+const fileInput = document.getElementById("fileInput");
+const clearBtn = document.getElementById("clearBtn");
+const reloadBtn = document.getElementById("reloadBtn");
+const summaryCard = document.getElementById("summaryCard");
+const metaText = document.getElementById("metaText");
+const recordsEl = document.getElementById("records");
+const statusChip = document.getElementById("statusChip");
+const monthTitle = document.getElementById("monthTitle");
+const calendarEl = document.getElementById("calendar");
 
-      const sorted = [...entries].sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
-      recordsEl.innerHTML = "";
+function fmt(n){ const v = Number(n || 0); return Number.isInteger(v) ? String(v) : String(v).replace(/\.0+$/,""); }
+function toDate(s){ return s ? new Date(s + "T00:00:00") : null; }
+function ymd(d){ return d.toISOString().slice(0,10); }
 
-      if (!sorted.length) {
-        recordsEl.innerHTML = '<div class="empty">기록이 없습니다.</div>';
-        return;
-      }
+function getDateRange(entry){
+  const start = entry.date || "";
+  const days = Number(entry.days || 0);
+  if (!start || !days || days <= 1) return start;
+  return `${start} · ${fmt(days)}일`;
+}
 
-      for (const entry of sorted) {
-        const card = document.createElement("div");
-        card.className = "record";
-        const memo = entry.memo && String(entry.memo).trim() ? String(entry.memo).trim() : "메모 없음";
-        const type = entry.type || "연차";
-        card.innerHTML = `
-          <div class="record-top">
-            <div class="record-date">${getDateRange(entry)}</div>
-            <div class="record-type">${type} · ${fmt(entry.days)}일</div>
-          </div>
-          <div class="record-memo">${memo}</div>
-        `;
-        recordsEl.appendChild(card);
-      }
-    }
+function persist(data, meta){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  localStorage.setItem(META_KEY, JSON.stringify(meta));
+}
 
-    function persist(data, meta) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      localStorage.setItem(META_KEY, JSON.stringify(meta));
-    }
+function clearStored(){
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(META_KEY);
+  state.data = null;
+  summaryCard.style.display = "none";
+  statusChip.style.display = "none";
+  recordsEl.innerHTML = '<div class="empty">데이터를 불러오면 최근 기록이 표시됩니다.</div>';
+  calendarEl.innerHTML = "";
+  metaText.textContent = AUTO_JSON_URL ? "자동 로딩 URL이 설정되어 있습니다. 자동 새로고침을 누르거나 앱을 다시 열어 주세요." : "자동 로딩 URL이 없으면 JSON 파일을 직접 선택해 주세요.";
+  fileInput.value = "";
+}
 
-    function clearStored() {
-      localStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem(META_KEY);
-      summaryCard.style.display = "none";
-      statusChip.style.display = "none";
-      recordsEl.innerHTML = '<div class="empty">JSON 파일을 불러오면 기록이 여기에 표시됩니다.</div>';
-      metaText.textContent = "아직 불러온 파일이 없습니다.";
-      fileInput.value = "";
-    }
-
-    fileInput.addEventListener("change", async (event) => {
-      const file = event.target.files && event.target.files[0];
-      if (!file) return;
-      try {
-        const text = await file.text();
-        const data = JSON.parse(text);
-        const meta = { fileName: file.name, loadedAt: new Date().toLocaleString("ko-KR") };
-        persist(data, meta);
-        render(data, meta);
-      } catch (err) {
-        alert("JSON 파일을 읽는 중 오류가 발생했습니다. leave_data.json 파일인지 확인해 주세요.");
-      }
+function getFilterEntries(entries){
+  const now = new Date();
+  if(state.currentFilter === "all") return entries;
+  if(state.currentFilter === "30"){
+    const cutoff = new Date(); cutoff.setDate(now.getDate() - 30);
+    return entries.filter(x => toDate(x.date) >= cutoff);
+  }
+  if(state.currentFilter === "90"){
+    const cutoff = new Date(); cutoff.setDate(now.getDate() - 90);
+    return entries.filter(x => toDate(x.date) >= cutoff);
+  }
+  if(state.currentFilter === "year"){
+    return entries.filter(x => {
+      const d = toDate(x.date); return d && d.getFullYear() === now.getFullYear();
     });
+  }
+  return entries;
+}
 
-    clearBtn.addEventListener("click", clearStored);
+function monthLabel(dateObj){
+  return `${dateObj.getFullYear()}년 ${dateObj.getMonth()+1}월`;
+}
 
-    const saved = localStorage.getItem(STORAGE_KEY);
-    const savedMeta = localStorage.getItem(META_KEY);
-    if (saved) {
-      try {
-        render(JSON.parse(saved), savedMeta ? JSON.parse(savedMeta) : {});
-      } catch (_) {
-        clearStored();
-      }
+function buildMonthMap(entries, year, month){
+  const map = {};
+  for(const entry of entries){
+    const d = toDate(entry.date);
+    if(!d) continue;
+    if(d.getFullYear() === year && d.getMonth() === month){
+      const key = d.getDate();
+      if(!map[key]) map[key] = [];
+      map[key].push(entry);
     }
+  }
+  return map;
+}
 
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+function renderCalendar(entries){
+  if(!state.currentMonth){
+    const base = entries[0] && entries[0].date ? toDate(entries[0].date) : new Date();
+    state.currentMonth = new Date(base.getFullYear(), base.getMonth(), 1);
+  }
+  const year = state.currentMonth.getFullYear();
+  const month = state.currentMonth.getMonth();
+  monthTitle.textContent = monthLabel(state.currentMonth);
+  calendarEl.innerHTML = "";
+
+  const weekdays = ["일","월","화","수","목","금","토"];
+  weekdays.forEach((wd, idx) => {
+    const div = document.createElement("div");
+    div.className = "weekday" + (idx===0 ? " sun" : idx===6 ? " sat" : "");
+    div.textContent = wd;
+    calendarEl.appendChild(div);
+  });
+
+  const first = new Date(year, month, 1);
+  const startDay = first.getDay();
+  const lastDate = new Date(year, month + 1, 0).getDate();
+  const today = ymd(new Date());
+  const monthMap = buildMonthMap(entries, year, month);
+
+  const totalCells = 42;
+  for(let i = 0; i < totalCells; i++){
+    const dayNum = i - startDay + 1;
+    if(dayNum < 1 || dayNum > lastDate){
+      const empty = document.createElement("div");
+      empty.className = "cell empty";
+      calendarEl.appendChild(empty);
+      continue;
+    }
+    const items = monthMap[dayNum] || [];
+    const dateKey = `${year}-${String(month+1).padStart(2,"0")}-${String(dayNum).padStart(2,"0")}`;
+    const cell = document.createElement("div");
+    cell.className = "cell" + (items.length ? " has" : "") + (dateKey === today ? " today" : "");
+
+    const top = document.createElement("div");
+    top.className = "cell-top";
+    const num = document.createElement("div");
+    num.className = "daynum" + (new Date(year, month, dayNum).getDay()===0 ? " sun" : new Date(year, month, dayNum).getDay()===6 ? " sat" : "");
+    num.textContent = dayNum;
+    top.appendChild(num);
+
+    if(items.length){
+      const sum = items.reduce((acc, item) => acc + Number(item.days || 0), 0);
+      const chip = document.createElement("div");
+      chip.className = "sumchip";
+      chip.textContent = `${fmt(sum)}일`;
+      top.appendChild(chip);
+    }
+    cell.appendChild(top);
+
+    const list = document.createElement("div");
+    list.className = "leave-list";
+    if(items.length){
+      items.slice(0,2).forEach(item => {
+        const bar = document.createElement("div");
+        bar.className = "leave-bar";
+        const type = document.createElement("div");
+        type.className = "leave-type";
+        type.textContent = item.type || "연차";
+        const memo = document.createElement("div");
+        memo.className = "leave-memo";
+        memo.textContent = item.memo && String(item.memo).trim() ? String(item.memo).trim() : "메모 없음";
+        bar.appendChild(type); bar.appendChild(memo);
+        list.appendChild(bar);
       });
     }
-  </script>
+    cell.appendChild(list);
+    calendarEl.appendChild(cell);
+  }
+}
+
+function renderRecords(entries){
+  const filtered = getFilterEntries(entries);
+  const sorted = [...filtered].sort((a,b) => String(b.date || "").localeCompare(String(a.date || "")));
+  recordsEl.innerHTML = "";
+  if(!sorted.length){
+    recordsEl.innerHTML = '<div class="empty">선택한 조건의 기록이 없습니다.</div>';
+    return;
+  }
+  for(const entry of sorted.slice(0, 40)){
+    const card = document.createElement("div");
+    card.className = "record";
+    const memo = entry.memo && String(entry.memo).trim() ? String(entry.memo).trim() : "메모 없음";
+    const type = entry.type || "연차";
+    card.innerHTML = `
+      <div class="record-top">
+        <div class="record-date">${getDateRange(entry)}</div>
+        <div class="record-type">${type} · ${fmt(entry.days)}일</div>
+      </div>
+      <div class="record-memo">${memo}</div>
+    `;
+    recordsEl.appendChild(card);
+  }
+}
+
+function renderSummary(data, meta){
+  const settings = data.settings || {};
+  const entries = Array.isArray(data.entries) ? data.entries : [];
+  const total = Number(settings.annual_total || 15);
+  const used = entries.reduce((sum, x) => sum + Number(x.days || 0), 0);
+  const remain = total - used;
+
+  document.getElementById("totalVal").textContent = fmt(total);
+  document.getElementById("usedVal").textContent = fmt(used);
+  document.getElementById("remainVal").textContent = fmt(remain);
+  document.getElementById("countVal").textContent = String(entries.length);
+  summaryCard.style.display = "block";
+
+  let chipClass = "status-green", chipText = "여유 있음";
+  if(remain < 6){ chipClass = "status-red"; chipText = "적음"; }
+  else if(remain < 10){ chipClass = "status-orange"; chipText = "주의"; }
+  statusChip.className = `status-chip ${chipClass}`;
+  statusChip.textContent = `상태 · ${chipText}`;
+  statusChip.style.display = "inline-flex";
+
+  const source = meta.fileName ? `불러온 파일: ${meta.fileName}` : (meta.url ? `자동 로딩 URL: ${meta.url}` : "저장된 데이터 불러옴");
+  const loadedAt = meta.loadedAt ? `\n불러온 시각: ${meta.loadedAt}` : "";
+  metaText.textContent = source + loadedAt;
+}
+
+function renderAll(data, meta){
+  state.data = data;
+  const entries = Array.isArray(data.entries) ? data.entries : [];
+  renderSummary(data, meta);
+  renderCalendar(entries);
+  renderRecords(entries);
+}
+
+async function loadFromUrl(showAlert = false){
+  if(!AUTO_JSON_URL){
+    if(showAlert) alert("자동 로딩 URL이 설정되어 있지 않습니다. config.js 파일을 수정해 주세요.");
+    return;
+  }
+  try{
+    const res = await fetch(AUTO_JSON_URL, { cache: "no-store" });
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+    const meta = { url: AUTO_JSON_URL, loadedAt: new Date().toLocaleString("ko-KR") };
+    persist(data, meta);
+    state.currentMonth = null;
+    renderAll(data, meta);
+  }catch(err){
+    if(showAlert) alert("자동 로딩에 실패했습니다. URL 또는 CORS 설정을 확인해 주세요.");
+  }
+}
+
+document.getElementById("prevMonth").addEventListener("click", () => {
+  if(!state.currentMonth || !state.data) return;
+  state.currentMonth = new Date(state.currentMonth.getFullYear(), state.currentMonth.getMonth()-1, 1);
+  renderCalendar(state.data.entries || []);
+});
+document.getElementById("nextMonth").addEventListener("click", () => {
+  if(!state.currentMonth || !state.data) return;
+  state.currentMonth = new Date(state.currentMonth.getFullYear(), state.currentMonth.getMonth()+1, 1);
+  renderCalendar(state.data.entries || []);
+});
+
+document.querySelectorAll(".tab").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+    btn.classList.add("active");
+    state.currentFilter = btn.dataset.filter;
+    if(state.data) renderRecords(state.data.entries || []);
+  });
+});
+
+fileInput.addEventListener("change", async (event) => {
+  const file = event.target.files && event.target.files[0];
+  if(!file) return;
+  try{
+    const text = await file.text();
+    const data = JSON.parse(text);
+    const meta = { fileName: file.name, loadedAt: new Date().toLocaleString("ko-KR") };
+    persist(data, meta);
+    state.currentMonth = null;
+    renderAll(data, meta);
+  }catch(err){
+    alert("JSON 파일을 읽는 중 오류가 발생했습니다. leave_data.json 파일인지 확인해 주세요.");
+  }
+});
+
+document.getElementById("clearBtn").addEventListener("click", clearStored);
+document.getElementById("reloadBtn").addEventListener("click", () => loadFromUrl(true));
+
+const saved = localStorage.getItem(STORAGE_KEY);
+const savedMeta = localStorage.getItem(META_KEY);
+if(saved){
+  try{
+    const data = JSON.parse(saved);
+    const meta = savedMeta ? JSON.parse(savedMeta) : {};
+    renderAll(data, meta);
+  }catch(_){
+    clearStored();
+  }
+}
+if(AUTO_JSON_URL){ loadFromUrl(false); }
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load", () => navigator.serviceWorker.register("./service-worker.js").catch(() => {}));
+}
+</script>
 </body>
 </html>
