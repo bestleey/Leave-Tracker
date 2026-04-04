@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>연차 확인</title>
+
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont;
+  background: #f5f7fb;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 8px;
+  background: #0a58dc;
+  color: white;
+  font-size: 16px;
+}
+
+.card {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  margin-top: 10px;
+}
+
+.small {
+  color: #888;
+  font-size: 13px;
+}
+</style>
+
+</head>
+<body>
+
+<h1>연차 확인</h1>
+
+<button onclick="loadData()">자동 새로고침</button>
+
+<div class="card" id="status">
+데이터 로딩 중...
+</div>
+
+<div class="card" id="list"></div>
+
+<script>
+const DATA_URL = "./leave_data.json";
+
+async function loadData() {
+  try {
+    const res = await fetch(DATA_URL + "?v=" + Date.now());
+    const data = await res.json();
+    render(data);
+  } catch (e) {
+    document.getElementById("status").innerHTML =
+      "❌ 데이터 불러오기 실패<br><span class='small'>" + e + "</span>";
+  }
+}
+
+function render(data) {
+  const entries = data.entries || [];
+  const total = data.settings?.annual_total || 0;
+
+  let used = entries.reduce((sum, e) => sum + e.days, 0);
+  let remain = total - used;
+
+  document.getElementById("status").innerHTML =
+    `남은 연차: <b>${remain}</b> / ${total}`;
+
+  const list = entries.map(e => `
+    <div style="padding:8px;border-bottom:1px solid #eee">
+      ${e.date} (${e.days}일) - ${e.type} <br>
+      <span class="small">${e.memo || ""}</span>
+    </div>
+  `).join("");
+
+  document.getElementById("list").innerHTML =
+    list || "<div class='small'>기록 없음</div>";
+}
+
+loadData();
+</script>
+
+</body>
+</html>
