@@ -3,76 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>연차 앱 Ultimate</title>
+<title>연차 앱 Final</title>
 
 <style>
 body{font-family:-apple-system;background:#f2f2f7;margin:0;padding:16px;color:#161618}
 
-h1{font-size:22px;margin-bottom:10px}
-
-/* 요약 */
-.summary{display:flex;gap:10px;margin-bottom:12px}
-.sum-box{flex:1;border-radius:14px;padding:10px;text-align:center;color:#fff}
-.green{background:#34c759}
-.yellow{background:#ffcc00;color:#000}
-.red{background:#ff3b30}
-
-.sum-title{font-size:12px}
-.sum-value{font-size:20px;font-weight:600}
-
-/* 카드 */
-.card{background:rgba(255,255,255,0.7);backdrop-filter:blur(10px);
-border-radius:16px;padding:12px;margin-bottom:12px}
-
-/* 달력 */
 .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.day{background:white;border-radius:10px;padding:4px;min-height:75px;position:relative;font-size:12px;display:flex;flex-direction:column;justify-content:space-between}
 
-/* 주말 색상 (배경과 다르게) */
-.weekend{background:#e9edf5}
+.day{
+ background:white;
+ border-radius:10px;
+ padding:4px;
+ min-height:80px;
+ position:relative;
+ display:flex;
+ flex-direction:column;
+ justify-content:space-between;
+}
 
-/* 날짜 */
 .date{font-weight:600}
 
-/* 연속 바 */
+/* 주말 색상 + 텍스트 */
+.sun{background:#ffe5e5;color:#d00}
+.sat{background:#e5f0ff;color:#0066ff}
+
+/* 바 */
 .bar{
  position:absolute;
  bottom:0;
  height:6px;
  background:#0a58dc;
- transition:all 0.2s ease;
 }
 
-.start{left:4px;right:50%;border-radius:6px 0 0 6px}
+.start{left:0;right:50%;border-radius:6px 0 0 6px}
 .mid{left:0;right:0}
-.end{left:50%;right:4px;border-radius:0 6px 6px 0}
-.single{left:4px;right:4px;border-radius:6px}
+.end{left:50%;right:0;border-radius:0 6px 6px 0}
+.single{left:0;right:0;border-radius:6px}
 
-/* 메모 */
+/* 반차 */
+.half{
+ height:6px;
+ width:50%;
+ background:#34c759;
+ position:absolute;
+ bottom:0;
+ left:0;
+ border-radius:6px;
+}
+
 .memo{font-size:10px;color:#555}
-
 </style>
 </head>
 
 <body>
 
-<h1>연차 앱</h1>
-
-<div class="summary">
- <div id="box" class="sum-box">
-   <div class="sum-title">남은 연차</div>
-   <div class="sum-value" id="remain">-</div>
- </div>
-</div>
-
-<div class="card" id="sync">동기화 중...</div>
-
-<div class="card">
-<button onclick="prev()">◀</button>
-<span id="month"></span>
-<button onclick="next()">▶</button>
-</div>
-
+<h2 id="month"></h2>
 <div id="calendar" class="calendar"></div>
 
 <script>
@@ -82,24 +67,7 @@ let cur=new Date();
 async function load(){
  const res=await fetch(URL+"?v="+Date.now());
  const data=await res.json();
- updateSummary(data);
- document.getElementById("sync").innerText="동기화: "+new Date().toLocaleTimeString();
  render(data);
-}
-
-function updateSummary(data){
- let total=data.settings?.annual_total||0;
- let used=data.entries.reduce((s,e)=>s+e.days,0);
- let remain=total-used;
-
- let box=document.getElementById("box");
- box.className="sum-box";
-
- if(remain>=10) box.classList.add("green");
- else if(remain>=6) box.classList.add("yellow");
- else box.classList.add("red");
-
- document.getElementById("remain").innerText=remain;
 }
 
 function render(data){
@@ -115,18 +83,16 @@ function render(data){
  let first=new Date(y,m,1).getDay();
  let last=new Date(y,m+1,0).getDate();
 
- // 연속 휴가 그룹 처리
- let ranges = [];
+ let ranges=new Set();
+
  entries.forEach(e=>{
-   if(e.days>=2){
-     let start = new Date(e.date);
-     for(let i=0;i<e.days;i++){
-       let d = new Date(start);
-       d.setDate(start.getDate()+i);
-       ranges.push(d.toISOString().slice(0,10));
-     }
-   } else {
-     ranges.push(e.date);
+   let start=new Date(e.date);
+   let days=Math.ceil(e.days||1);
+
+   for(let i=0;i<days;i++){
+     let d=new Date(start);
+     d.setDate(start.getDate()+i);
+     ranges.add(d.toISOString().slice(0,10));
    }
  });
 
@@ -136,30 +102,32 @@ function render(data){
   let cell=document.createElement("div");
   cell.className="day";
 
-  let day=new Date(y,m,d).getDay();
-  if(day===0||day===6) cell.classList.add("weekend");
+  let weekday=new Date(y,m,d).getDay();
+  if(weekday===0) cell.classList.add("sun");
+  if(weekday===6) cell.classList.add("sat");
 
   let dateStr=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
 
-  let match=entries.find(e=>e.date===dateStr);
+  let entry=entries.find(e=>e.date===dateStr);
 
-  cell.innerHTML=`<div class="date">${d}</div>` + (match?`<div class="memo">${match.memo||""}</div>`:"");
+  cell.innerHTML=`<div class="date">${d}</div>`+(entry?`<div class="memo">${entry.memo||""}</div>`:"");
 
-  if(ranges.includes(dateStr)){
+  if(entry && entry.days===0.5){
+    let half=document.createElement("div");
+    half.className="half";
+    cell.appendChild(half);
+  }
+
+  if(ranges.has(dateStr)){
     let bar=document.createElement("div");
 
-    let prev = new Date(y,m,d-1).toISOString().slice(0,10);
-    let next = new Date(y,m,d+1).toISOString().slice(0,10);
+    let prev=new Date(y,m,d-1).toISOString().slice(0,10);
+    let next=new Date(y,m,d+1).toISOString().slice(0,10);
 
-    if(ranges.includes(prev) && ranges.includes(next)){
-      bar.className="bar mid";
-    }else if(ranges.includes(prev)){
-      bar.className="bar end";
-    }else if(ranges.includes(next)){
-      bar.className="bar start";
-    }else{
-      bar.className="bar single";
-    }
+    if(ranges.has(prev)&&ranges.has(next)) bar.className="bar mid";
+    else if(ranges.has(prev)) bar.className="bar end";
+    else if(ranges.has(next)) bar.className="bar start";
+    else bar.className="bar single";
 
     cell.appendChild(bar);
   }
@@ -167,9 +135,6 @@ function render(data){
   cal.appendChild(cell);
  }
 }
-
-function prev(){cur.setMonth(cur.getMonth()-1);load();}
-function next(){cur.setMonth(cur.getMonth()+1);load();}
 
 load();
 </script>
