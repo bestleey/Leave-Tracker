@@ -4,95 +4,70 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>연차</title>
-
 <style>
-body{font-family:-apple-system;background:#f2f2f7;margin:0;padding:16px}
-
-h1{margin-bottom:10px}
-
+body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;background:#f2f2f7;margin:0;padding:16px;color:#161618}
+h1{margin:0 0 10px}
 .summary{display:flex;gap:10px;margin-bottom:12px}
-.box{flex:1;border-radius:12px;padding:10px;text-align:center;color:white}
+.box{flex:1;border-radius:12px;padding:10px;text-align:center;color:white;font-weight:600}
 .green{background:#34c759}
 .yellow{background:#ffcc00;color:black}
 .red{background:#ff3b30}
-
-.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-
-.day{
- background:white;
- border-radius:10px;
- min-height:80px;
- padding:4px;
- position:relative;
-}
-
-.sun{background:#ffd6d6;color:#b00000}
-.sat{background:#d6e8ff;color:#0047b3}
-
-.bar{
- position:absolute;
- bottom:0;
- height:6px;
- background:#0a58dc;
-}
-
-/* 시작 */
-.start{
- left:0;
- right:0;
- border-radius:6px 0 0 6px;
-}
-
-/* 중간 */
-.mid{
- left:0;
- right:0;
-}
-
-/* 끝 */
-.end{
- left:0;
- right:0;
- border-radius:0 6px 6px 0;
-}
-
-/* 단일 */
-.single{
- left:0;
- right:0;
- border-radius:6px;
-}
-
-.half{position:absolute;bottom:0;left:0;width:50%;height:6px;background:#34c759;border-radius:6px}
-
-.memo{font-size:10px;color:#555}
-.controls{display:flex;justify-content:space-between;margin-bottom:10px}
+.card{background:rgba(255,255,255,0.78);backdrop-filter:blur(12px);border-radius:16px;padding:12px;margin-bottom:12px}
+.controls{display:flex;justify-content:space-between;align-items:center}
 button{padding:6px 10px;border:none;background:#0a58dc;color:white;border-radius:8px}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.weekday{font-size:11px;text-align:center;color:#666;padding:4px 0}
+.day{
+  background:#fff;border-radius:10px;padding:6px;min-height:82px;position:relative;
+  display:flex;flex-direction:column;justify-content:flex-start;overflow:hidden;
+}
+.sun{background:#ffd9d9}
+.sat{background:#dcecff}
+.sun .date{color:#b00020}
+.sat .date{color:#0059c9}
+.date{font-weight:700;font-size:13px;line-height:1.2;margin-bottom:4px}
+.memo{font-size:10px;color:#555;line-height:1.2;word-break:break-word;max-height:26px;overflow:hidden}
+.bar{
+  position:absolute;left:0;right:0;bottom:0;height:6px;background:#0a58dc;
+}
+.start{
+  position:absolute;left:0;right:0;bottom:0;height:6px;background:#0a58dc;
+  border-radius:6px 0 0 6px;
+}
+.mid{
+  position:absolute;left:0;right:0;bottom:0;height:6px;background:#0a58dc;
+  border-radius:0;
+}
+.end{
+  position:absolute;left:0;right:0;bottom:0;height:6px;background:#0a58dc;
+  border-radius:0 6px 6px 0;
+}
+.single{
+  position:absolute;left:0;right:0;bottom:0;height:6px;background:#0a58dc;
+  border-radius:6px;
+}
+.half{
+  position:absolute;left:0;bottom:0;width:50%;height:6px;background:#34c759;border-radius:6px 0 0 6px;
+}
 </style>
 </head>
-
 <body>
 
 <h1>연차</h1>
 
 <div class="summary">
- <div id="remainBox" class="box">
-  남은<br><span id="remain">-</span>
- </div>
- <div class="box" style="background:#999">
-  총<br><span id="total">-</span>
- </div>
- <div class="box" style="background:#666">
-  사용<br><span id="used">-</span>
- </div>
+  <div id="remainBox" class="box">남은<br><span id="remain">-</span></div>
+  <div class="box" style="background:#8e8e93">총<br><span id="total">-</span></div>
+  <div class="box" style="background:#636366">사용<br><span id="used">-</span></div>
 </div>
 
-<div class="controls">
-<button onclick="prev()">◀</button>
-<div id="month"></div>
-<button onclick="next()">▶</button>
+<div class="card controls">
+  <button onclick="prev()">◀</button>
+  <div id="month"></div>
+  <button onclick="next()">▶</button>
 </div>
 
+<div class="calendar" id="weekdayRow"></div>
 <div id="calendar" class="calendar"></div>
 
 <script>
@@ -100,105 +75,134 @@ const URL="./leave_data.json";
 let cur=new Date();
 
 async function load(){
- const res=await fetch(URL+"?v="+Date.now());
- const data=await res.json();
- update(data);
- render(data);
+  const res=await fetch(URL+"?v="+Date.now(), {cache:"no-store"});
+  const data=await res.json();
+  updateSummary(data);
+  render(data);
 }
 
-function update(data){
- let total=data.settings?.annual_total||0;
- let used=(data.entries||[]).reduce((s,e)=>s+Number(e.days||0),0);
- let remain=total-used;
+function updateSummary(data){
+  const total=Number(data.settings?.annual_total || 0);
+  const used=(data.entries||[]).reduce((s,e)=>s+Number(e.days||0),0);
+  const remain=total-used;
 
- document.getElementById("total").innerText=total;
- document.getElementById("used").innerText=used;
- document.getElementById("remain").innerText=remain;
+  document.getElementById("total").innerText=fmt(total);
+  document.getElementById("used").innerText=fmt(used);
+  document.getElementById("remain").innerText=fmt(remain);
 
- let box=document.getElementById("remainBox");
- box.className="box";
- if(remain>=10) box.classList.add("green");
- else if(remain>=6) box.classList.add("yellow");
- else box.classList.add("red");
+  const box=document.getElementById("remainBox");
+  box.className="box";
+  if(remain>=10) box.classList.add("green");
+  else if(remain>=6) box.classList.add("yellow");
+  else box.classList.add("red");
+}
+
+function fmt(n){
+  const v=Number(n||0);
+  return Number.isInteger(v) ? String(v) : String(v).replace(/\.0+$/,"");
+}
+
+function expandWorkdays(startStr, amount){
+  const result=[];
+  let d=new Date(startStr);
+  const whole=Math.floor(Number(amount||0));
+  let count=0;
+  while(count<whole){
+    const wd=d.getDay();
+    if(wd!==0 && wd!==6){
+      result.push(d.toISOString().slice(0,10));
+      count++;
+    }
+    d.setDate(d.getDate()+1);
+  }
+  return result;
 }
 
 function render(data){
- const cal=document.getElementById("calendar");
- cal.innerHTML="";
+  const cal=document.getElementById("calendar");
+  const weekdayRow=document.getElementById("weekdayRow");
+  cal.innerHTML="";
+  weekdayRow.innerHTML="";
 
- let y=cur.getFullYear();
- let m=cur.getMonth();
+  ["일","월","화","수","목","금","토"].forEach((w, idx)=>{
+    const div=document.createElement("div");
+    div.className="weekday";
+    div.textContent=w;
+    if(idx===0) div.style.color="#b00020";
+    if(idx===6) div.style.color="#0059c9";
+    weekdayRow.appendChild(div);
+  });
 
- document.getElementById("month").innerText=y+"-"+(m+1);
+  const y=cur.getFullYear();
+  const m=cur.getMonth();
+  document.getElementById("month").innerText=`${y}-${String(m+1).padStart(2,"0")}`;
 
- let first=new Date(y,m,1).getDay();
- let last=new Date(y,m+1,0).getDate();
+  const first=new Date(y,m,1).getDay();
+  const last=new Date(y,m+1,0).getDate();
+  const entries=data.entries||[];
 
- const entries=data.entries||[];
-
- const ranges=new Set();
-
-entries.forEach(e=>{
- let start=new Date(e.date);
- let days=Math.ceil(e.days||1);
-
- let count=0;
- let d=new Date(start);
-
- while(count < days){
-   let day = d.getDay();
-
-   // 🔥 주말 제외
-   if(day !== 0 && day !== 6){
-     ranges.add(d.toISOString().slice(0,10));
-     count++;
-   }
-
-   d.setDate(d.getDate()+1);
- }
-});
- for(let i=0;i<first;i++) cal.appendChild(document.createElement("div"));
-
- for(let d=1;d<=last;d++){
-  let cell=document.createElement("div");
-  cell.className="day";
-
-  let wd=new Date(y,m,d).getDay();
-  if(wd===0) cell.classList.add("sun");
-  if(wd===6) cell.classList.add("sat");
-
-  let dateStr=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
-
-  let entry=entries.find(e=>e.date===dateStr);
-
-  cell.innerHTML=`<b>${d}</b>`+(entry?`<div class="memo">${entry.memo||""}</div>`:"");
-
-  if(entry && entry.days==0.5){
-    let half=document.createElement("div");
-    half.className="half";
-    cell.appendChild(half);
+  // 전체 연차(1일 이상) 평일 확장 집합
+  const fullDayMap=new Map();
+  for(const e of entries){
+    const days=Number(e.days||0);
+    if(days>=1){
+      const expanded=expandWorkdays(e.date, days);
+      expanded.forEach((dateStr)=>fullDayMap.set(dateStr, e));
+    }
   }
 
-  if(ranges.has(dateStr) && !(entry && entry.days==0.5)){
-    let bar=document.createElement("div");
-
-    let prev=new Date(y,m,d-1).toISOString().slice(0,10);
-    let next=new Date(y,m,d+1).toISOString().slice(0,10);
-
-    if(ranges.has(prev)&&ranges.has(next)) bar.className="bar mid";
-    else if(ranges.has(prev)) bar.className="bar end";
-    else if(ranges.has(next)) bar.className="bar start";
-    else bar.className="bar single";
-
-    cell.appendChild(bar);
+  for(let i=0;i<first;i++){
+    cal.appendChild(document.createElement("div"));
   }
 
-  cal.appendChild(cell);
- }
+  for(let d=1; d<=last; d++){
+    const cell=document.createElement("div");
+    cell.className="day";
+
+    const cellDate=new Date(y,m,d);
+    const wd=cellDate.getDay();
+    if(wd===0) cell.classList.add("sun");
+    if(wd===6) cell.classList.add("sat");
+
+    const dateStr=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+
+    const startEntry=entries.find(e=>e.date===dateStr);
+    const fullEntry=fullDayMap.get(dateStr);
+
+    const memoSource=startEntry || fullEntry;
+    cell.innerHTML=`<div class="date">${d}</div>` + (memoSource ? `<div class="memo">${memoSource.memo||""}</div>` : "");
+
+    // 반차는 시작일에만 반칸
+    if(startEntry && Number(startEntry.days)===0.5){
+      const half=document.createElement("div");
+      half.className="half";
+      cell.appendChild(half);
+    }
+
+    // 연차(1일 이상)만 전체/연속 바
+    if(fullEntry){
+      const prevDate=new Date(y,m,d-1);
+      const nextDate=new Date(y,m,d+1);
+      const prevStr=prevDate.toISOString().slice(0,10);
+      const nextStr=nextDate.toISOString().slice(0,10);
+
+      const prevHas=fullDayMap.has(prevStr);
+      const nextHas=fullDayMap.has(nextStr);
+
+      const bar=document.createElement("div");
+      if(prevHas && nextHas) bar.className="mid";
+      else if(prevHas) bar.className="end";
+      else if(nextHas) bar.className="start";
+      else bar.className="single";
+      cell.appendChild(bar);
+    }
+
+    cal.appendChild(cell);
+  }
 }
 
-function prev(){cur.setMonth(cur.getMonth()-1);load();}
-function next(){cur.setMonth(cur.getMonth()+1);load();}
+function prev(){ cur.setMonth(cur.getMonth()-1); load(); }
+function next(){ cur.setMonth(cur.getMonth()+1); load(); }
 
 load();
 </script>
