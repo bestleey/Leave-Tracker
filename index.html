@@ -3,48 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>연차 앱 (안정)</title>
+<title>연차</title>
+
 <style>
-body{font-family:-apple-system;background:#f2f2f7;margin:0;padding:16px;color:#161618}
-h1{margin:0 0 10px}
+body{font-family:-apple-system;background:#f2f2f7;margin:0;padding:16px}
+
+h1{margin-bottom:10px}
+
 .summary{display:flex;gap:10px;margin-bottom:12px}
-.sum-box{flex:1;border-radius:14px;padding:10px;text-align:center;color:#fff}
+.box{flex:1;border-radius:12px;padding:10px;text-align:center;color:white}
 .green{background:#34c759}
-.yellow{background:#ffcc00;color:#000}
+.yellow{background:#ffcc00;color:black}
 .red{background:#ff3b30}
-.card{background:rgba(255,255,255,0.7);backdrop-filter:blur(10px);border-radius:16px;padding:12px;margin-bottom:12px}
+
 .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.day{background:#fff;border-radius:10px;padding:6px;min-height:80px;position:relative;display:flex;flex-direction:column;justify-content:space-between}
+
+.day{
+ background:white;
+ border-radius:10px;
+ min-height:80px;
+ padding:4px;
+ position:relative;
+}
+
 .sun{background:#ffd6d6;color:#b00000}
 .sat{background:#d6e8ff;color:#0047b3}
-.date{font-weight:600}
-.memo{font-size:10px;color:#555}
+
 .bar{position:absolute;bottom:0;height:6px;background:#0a58dc}
 .start{left:0;right:50%;border-radius:6px 0 0 6px}
 .mid{left:0;right:0}
 .end{left:50%;right:0;border-radius:0 6px 6px 0}
 .single{left:0;right:0;border-radius:6px}
+
 .half{position:absolute;bottom:0;left:0;width:50%;height:6px;background:#34c759;border-radius:6px}
-.controls{display:flex;justify-content:space-between;align-items:center}
-button{border:none;border-radius:8px;background:#0a58dc;color:#fff;padding:6px 10px}
+
+.memo{font-size:10px;color:#555}
+.controls{display:flex;justify-content:space-between;margin-bottom:10px}
+button{padding:6px 10px;border:none;background:#0a58dc;color:white;border-radius:8px}
 </style>
 </head>
+
 <body>
 
 <h1>연차</h1>
 
 <div class="summary">
- <div id="remainBox" class="sum-box">
-  <div>남은</div><div id="remain">-</div>
+ <div id="remainBox" class="box">
+  남은<br><span id="remain">-</span>
  </div>
- <div class="sum-box" style="background:#999"><div>총</div><div id="total">-</div></div>
- <div class="sum-box" style="background:#666"><div>사용</div><div id="used">-</div></div>
+ <div class="box" style="background:#999">
+  총<br><span id="total">-</span>
+ </div>
+ <div class="box" style="background:#666">
+  사용<br><span id="used">-</span>
+ </div>
 </div>
 
-<div class="card controls">
- <button onclick="prev()">◀</button>
- <div id="month"></div>
- <button onclick="next()">▶</button>
+<div class="controls">
+<button onclick="prev()">◀</button>
+<div id="month"></div>
+<button onclick="next()">▶</button>
 </div>
 
 <div id="calendar" class="calendar"></div>
@@ -56,19 +74,21 @@ let cur=new Date();
 async function load(){
  const res=await fetch(URL+"?v="+Date.now());
  const data=await res.json();
- updateSummary(data);
+ update(data);
  render(data);
 }
 
-function updateSummary(data){
+function update(data){
  let total=data.settings?.annual_total||0;
  let used=(data.entries||[]).reduce((s,e)=>s+Number(e.days||0),0);
  let remain=total-used;
+
  document.getElementById("total").innerText=total;
  document.getElementById("used").innerText=used;
  document.getElementById("remain").innerText=remain;
+
  let box=document.getElementById("remainBox");
- box.className="sum-box";
+ box.className="box";
  if(remain>=10) box.classList.add("green");
  else if(remain>=6) box.classList.add("yellow");
  else box.classList.add("red");
@@ -77,22 +97,23 @@ function updateSummary(data){
 function render(data){
  const cal=document.getElementById("calendar");
  cal.innerHTML="";
- const entries=data.entries||[];
 
  let y=cur.getFullYear();
  let m=cur.getMonth();
+
  document.getElementById("month").innerText=y+"-"+(m+1);
 
  let first=new Date(y,m,1).getDay();
  let last=new Date(y,m+1,0).getDate();
 
- // build range set
+ const entries=data.entries||[];
+
  const ranges=new Set();
  entries.forEach(e=>{
-   const start=new Date(e.date);
-   const days=Math.ceil(Number(e.days||1));
+   let start=new Date(e.date);
+   let days=Math.ceil(e.days||1);
    for(let i=0;i<days;i++){
-     const d=new Date(start);
+     let d=new Date(start);
      d.setDate(start.getDate()+i);
      ranges.add(d.toISOString().slice(0,10));
    }
@@ -101,36 +122,40 @@ function render(data){
  for(let i=0;i<first;i++) cal.appendChild(document.createElement("div"));
 
  for(let d=1;d<=last;d++){
-   const cell=document.createElement("div");
-   cell.className="day";
+  let cell=document.createElement("div");
+  cell.className="day";
 
-   const wd=new Date(y,m,d).getDay();
-   if(wd===0) cell.classList.add("sun");
-   if(wd===6) cell.classList.add("sat");
+  let wd=new Date(y,m,d).getDay();
+  if(wd===0) cell.classList.add("sun");
+  if(wd===6) cell.classList.add("sat");
 
-   const dateStr=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
-   const entry=entries.find(e=>e.date===dateStr);
+  let dateStr=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
 
-   cell.innerHTML = `<div class="date">${d}</div>` + (entry?`<div class="memo">${entry.memo||""}</div>`:"");
+  let entry=entries.find(e=>e.date===dateStr);
 
-   if(entry && Number(entry.days)===0.5){
-     const half=document.createElement("div");
-     half.className="half";
-     cell.appendChild(half);
-   }
+  cell.innerHTML=`<b>${d}</b>`+(entry?`<div class="memo">${entry.memo||""}</div>`:"");
 
-   if(ranges.has(dateStr) && !(entry && Number(entry.days)===0.5)){
-     const bar=document.createElement("div");
-     const prev=new Date(y,m,d-1).toISOString().slice(0,10);
-     const next=new Date(y,m,d+1).toISOString().slice(0,10);
-     if(ranges.has(prev)&&ranges.has(next)) bar.className="bar mid";
-     else if(ranges.has(prev)) bar.className="bar end";
-     else if(ranges.has(next)) bar.className="bar start";
-     else bar.className="bar single";
-     cell.appendChild(bar);
-   }
+  if(entry && entry.days==0.5){
+    let half=document.createElement("div");
+    half.className="half";
+    cell.appendChild(half);
+  }
 
-   cal.appendChild(cell);
+  if(ranges.has(dateStr) && !(entry && entry.days==0.5)){
+    let bar=document.createElement("div");
+
+    let prev=new Date(y,m,d-1).toISOString().slice(0,10);
+    let next=new Date(y,m,d+1).toISOString().slice(0,10);
+
+    if(ranges.has(prev)&&ranges.has(next)) bar.className="bar mid";
+    else if(ranges.has(prev)) bar.className="bar end";
+    else if(ranges.has(next)) bar.className="bar start";
+    else bar.className="bar single";
+
+    cell.appendChild(bar);
+  }
+
+  cal.appendChild(cell);
  }
 }
 
