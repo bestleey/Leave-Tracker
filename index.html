@@ -28,15 +28,25 @@ border-radius:16px;padding:12px;margin-bottom:12px}
 .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
 .day{background:white;border-radius:10px;padding:4px;min-height:75px;position:relative;font-size:12px;display:flex;flex-direction:column;justify-content:space-between}
 
-.weekend{background:#f0f0f0}
+/* 주말 색상 (배경과 다르게) */
+.weekend{background:#e9edf5}
 
+/* 날짜 */
 .date{font-weight:600}
 
 /* 연속 바 */
-.bar{position:absolute;bottom:0;height:6px;background:#0a58dc}
-.start{left:4px;right:0;border-radius:6px 0 0 6px}
+.bar{
+ position:absolute;
+ bottom:0;
+ height:6px;
+ background:#0a58dc;
+ transition:all 0.2s ease;
+}
+
+.start{left:4px;right:50%;border-radius:6px 0 0 6px}
 .mid{left:0;right:0}
-.end{left:0;right:4px;border-radius:0 6px 6px 0}
+.end{left:50%;right:4px;border-radius:0 6px 6px 0}
+.single{left:4px;right:4px;border-radius:6px}
 
 /* 메모 */
 .memo{font-size:10px;color:#555}
@@ -105,6 +115,21 @@ function render(data){
  let first=new Date(y,m,1).getDay();
  let last=new Date(y,m+1,0).getDate();
 
+ // 연속 휴가 그룹 처리
+ let ranges = [];
+ entries.forEach(e=>{
+   if(e.days>=2){
+     let start = new Date(e.date);
+     for(let i=0;i<e.days;i++){
+       let d = new Date(start);
+       d.setDate(start.getDate()+i);
+       ranges.push(d.toISOString().slice(0,10));
+     }
+   } else {
+     ranges.push(e.date);
+   }
+ });
+
  for(let i=0;i<first;i++) cal.appendChild(document.createElement("div"));
 
  for(let d=1;d<=last;d++){
@@ -120,9 +145,22 @@ function render(data){
 
   cell.innerHTML=`<div class="date">${d}</div>` + (match?`<div class="memo">${match.memo||""}</div>`:"");
 
-  if(match){
+  if(ranges.includes(dateStr)){
     let bar=document.createElement("div");
-    bar.className="bar start";
+
+    let prev = new Date(y,m,d-1).toISOString().slice(0,10);
+    let next = new Date(y,m,d+1).toISOString().slice(0,10);
+
+    if(ranges.includes(prev) && ranges.includes(next)){
+      bar.className="bar mid";
+    }else if(ranges.includes(prev)){
+      bar.className="bar end";
+    }else if(ranges.includes(next)){
+      bar.className="bar start";
+    }else{
+      bar.className="bar single";
+    }
+
     cell.appendChild(bar);
   }
 
