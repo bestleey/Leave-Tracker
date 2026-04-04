@@ -1,11 +1,6 @@
 {
 "name":"연차 앱",
 "short_name":"연차",
-"start_url":"./index.html",
 "display":"standalone",
-"background_color":"#f5f7fb",
-"theme_color":"#0a58dc",
-"icons":[
- {"src":"icon.png","sizes":"192x192","type":"image/png"}
-]
+"start_url":"./index.html"
 }

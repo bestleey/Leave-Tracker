@@ -3,32 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>연차 앱</title>
-
+<title>연차 앱 Ultimate</title>
 <link rel="manifest" href="manifest.webmanifest">
 
 <style>
-body {font-family:-apple-system; background:#f5f7fb; margin:0; padding:16px;}
-h1 {font-size:22px;}
-.calendar {display:grid; grid-template-columns:repeat(7,1fr); gap:6px;}
-.day {background:white; padding:6px; border-radius:8px; min-height:60px; font-size:12px;}
-.used {background:#d1f5d3;}
+body{font-family:-apple-system;background:#f2f2f7;margin:0;padding:16px}
+h1{font-size:22px}
+
+.card{background:rgba(255,255,255,0.7);backdrop-filter:blur(10px);
+border-radius:16px;padding:12px;margin-bottom:12px}
+
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.day{background:white;border-radius:10px;padding:6px;min-height:70px;position:relative;font-size:12px}
+
+.bar-start{background:#0a58dc;border-radius:10px 0 0 10px;height:6px;position:absolute;bottom:2px;left:2px;right:2px}
+.bar-mid{background:#0a58dc;height:6px;position:absolute;bottom:2px;left:0;right:0}
+.bar-end{background:#0a58dc;border-radius:0 10px 10px 0;height:6px;position:absolute;bottom:2px;left:2px;right:2px}
+
 </style>
 </head>
 
 <body>
 
-<h1>연차 캘린더</h1>
+<h1>연차 앱</h1>
+
+<div class="card" id="sync">동기화 중...</div>
+
+<div class="card">
+<button onclick="prev()">◀</button>
+<span id="month"></span>
+<button onclick="next()">▶</button>
+</div>
 
 <div id="calendar" class="calendar"></div>
 
 <script>
-const DATA_URL="./leave_data.json";
+const URL="./leave_data.json";
+let cur=new Date();
 
 async function load(){
- const res=await fetch(DATA_URL+"?v="+Date.now());
+ const res=await fetch(URL+"?v="+Date.now());
  const data=await res.json();
+ document.getElementById("sync").innerText="마지막 동기화: "+new Date().toLocaleTimeString();
  render(data);
+ checkAlert(data);
 }
 
 function render(data){
@@ -36,20 +54,46 @@ function render(data){
  cal.innerHTML="";
  const entries=data.entries||[];
 
- for(let i=1;i<=30;i++){
-   const d=document.createElement("div");
-   d.className="day";
-   d.innerHTML=i;
+ let y=cur.getFullYear();
+ let m=cur.getMonth();
 
-   const match=entries.find(e=>e.date.includes("-"+String(i).padStart(2,"0")));
-   if(match){
-     d.classList.add("used");
-     d.innerHTML+= "<br>"+match.type;
-   }
+ document.getElementById("month").innerText=y+"-"+(m+1);
 
-   cal.appendChild(d);
+ let first=new Date(y,m,1).getDay();
+ let last=new Date(y,m+1,0).getDate();
+
+ for(let i=0;i<first;i++) cal.appendChild(document.createElement("div"));
+
+ for(let d=1;d<=last;d++){
+  let cell=document.createElement("div");
+  cell.className="day";
+  cell.innerHTML=d;
+
+  let date=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+
+  let match=entries.find(e=>e.date===date);
+  if(match){
+    let bar=document.createElement("div");
+    bar.className="bar-start";
+    cell.appendChild(bar);
+  }
+
+  cal.appendChild(cell);
  }
 }
+
+function checkAlert(data){
+ let total=data.settings?.annual_total||0;
+ let used=data.entries.reduce((s,e)=>s+e.days,0);
+ let remain=total-used;
+
+ if(remain<=5){
+  alert("⚠️ 연차 얼마 안 남았습니다!");
+ }
+}
+
+function prev(){cur.setMonth(cur.getMonth()-1);load();}
+function next(){cur.setMonth(cur.getMonth()+1);load();}
 
 load();
 </script>
