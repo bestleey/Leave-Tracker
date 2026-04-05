@@ -152,8 +152,10 @@ function renderCalendar(data){
   for(const entry of entries){
     const days = Number(entry.days || 0);
     if(days === 0.5){
-      halfMap.set(String(entry.date), entry);
-    } else if(days >= 1){
+  if(!halfMap.has(entry.date)){
+    halfMap.set(entry.date, entry);
+  }
+} else if(days >= 1){
       const expanded = expandWorkdays(String(entry.date), days);
       for(const day of expanded){
         fullMap.set(day, entry);
