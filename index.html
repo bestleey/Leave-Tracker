@@ -180,11 +180,11 @@ function renderCalendar(data){
 
     cell.innerHTML = `<div class="date">${day}</div>` + (memoEntry ? `<div class="memo">${memoEntry.memo || ""}</div>` : "");
 
-    if(halfEntry){
-      const half = document.createElement("div");
-      half.className = "half";
-      cell.appendChild(half);
-    } else if(fullEntry){
+    if(halfEntry && weekday !== 0 && weekday !== 6){
+  const half = document.createElement("div");
+  half.className = "half";
+  cell.appendChild(half);
+} else if(fullEntry){
       const prev = addDaysLocal(year, month, day, -1).ymd;
       const next = addDaysLocal(year, month, day, 1).ymd;
       const prevHas = fullMap.has(prev);
