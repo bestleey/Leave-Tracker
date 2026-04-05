@@ -1,42 +1,35 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>연차</title>
 <style>
 body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;background:#f2f2f7;margin:0;padding:16px;color:#161618}
 h1{margin:0 0 10px}
 .summary{display:flex;gap:10px;margin-bottom:12px}
-.box{flex:1;border-radius:12px;padding:10px;text-align:center;color:white;font-weight:600}
+.box{flex:1;border-radius:12px;padding:10px;text-align:center;color:#fff;font-weight:600}
 .green{background:#34c759}
-.yellow{background:#ffcc00;color:black}
+.yellow{background:#ffcc00;color:#000}
 .red{background:#ff3b30}
-.card{background:rgba(255,255,255,0.78);backdrop-filter:blur(12px);border-radius:16px;padding:12px;margin-bottom:12px}
+.card{background:rgba(255,255,255,.78);backdrop-filter:blur(12px);border-radius:16px;padding:12px;margin-bottom:12px}
 .controls{display:flex;justify-content:space-between;align-items:center}
-button{padding:6px 10px;border:none;background:#0a58dc;color:white;border-radius:8px}
+button{padding:6px 10px;border:none;background:#0a58dc;color:#fff;border-radius:8px}
 .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
 .weekday{font-size:11px;text-align:center;color:#666;padding:4px 0}
-.day{
-  background:#fff;border-radius:10px;padding:6px;min-height:82px;position:relative;
-  display:flex;flex-direction:column;justify-content:flex-start;overflow:hidden;
-}
-.sun{background:#ffd1d1}
-.sat{background:#dbe9ff}
+.day{background:#fff;border-radius:10px;padding:6px;min-height:82px;position:relative;display:flex;flex-direction:column;justify-content:flex-start;overflow:hidden}
+.sun{background:#ffd0d0}
+.sat{background:#dbe8ff}
 .sun .date{color:#b00020}
 .sat .date{color:#0059c9}
 .date{font-weight:700;font-size:13px;line-height:1.2;margin-bottom:4px}
 .memo{font-size:10px;color:#555;line-height:1.2;word-break:break-word;max-height:26px;overflow:hidden}
-.start,.mid,.end,.single{
-  position:absolute;left:0;right:0;bottom:0;height:6px;background:#0a58dc;
-}
-.start{border-radius:6px 0 0 6px}
-.mid{border-radius:0}
-.end{border-radius:0 6px 6px 0}
-.single{border-radius:6px}
-.half{
-  position:absolute;left:0;bottom:0;width:50%;height:6px;background:#34c759;border-radius:6px 0 0 6px;
-}
+.bar-base{position:absolute;bottom:0;height:6px;background:#0a58dc}
+.bar-single{left:0;right:0;border-radius:6px}
+.bar-start{left:0;right:0;border-radius:6px 0 0 6px}
+.bar-mid{left:0;right:0;border-radius:0}
+.bar-end{left:0;right:0;border-radius:0 6px 6px 0}
+.half{position:absolute;left:0;bottom:0;width:50%;height:6px;background:#34c759;border-radius:6px 0 0 6px}
 </style>
 </head>
 <body>
@@ -50,17 +43,17 @@ button{padding:6px 10px;border:none;background:#0a58dc;color:white;border-radius
 </div>
 
 <div class="card controls">
-  <button onclick="prev()">◀</button>
-  <div id="month"></div>
-  <button onclick="next()">▶</button>
+  <button onclick="prevMonth()">◀</button>
+  <div id="monthLabel"></div>
+  <button onclick="nextMonth()">▶</button>
 </div>
 
-<div class="calendar" id="weekdayRow"></div>
+<div id="weekdayRow" class="calendar"></div>
 <div id="calendar" class="calendar"></div>
 
 <script>
-const URL = "./leave_data.json";
-let cur = new Date();
+const DATA_URL = "./leave_data.json";
+let current = new Date();
 
 function fmt(n){
   const v = Number(n || 0);
@@ -77,14 +70,14 @@ function toYMD(y,m,d){
 }
 
 function addDaysLocal(y,m,d,delta){
-  const dt = new Date(y, m-1, d);
+  const dt = new Date(y, m - 1, d);
   dt.setDate(dt.getDate() + delta);
   return {
     y: dt.getFullYear(),
-    m: dt.getMonth()+1,
+    m: dt.getMonth() + 1,
     d: dt.getDate(),
     wd: dt.getDay(),
-    ymd: toYMD(dt.getFullYear(), dt.getMonth()+1, dt.getDate())
+    ymd: toYMD(dt.getFullYear(), dt.getMonth() + 1, dt.getDate())
   };
 }
 
@@ -107,21 +100,21 @@ function expandWorkdays(startStr, amount){
   return out;
 }
 
-async function load(){
-  const res = await fetch(URL + "?v=" + Date.now(), { cache: "no-store" });
+async function loadData(){
+  const res = await fetch(DATA_URL + "?v=" + Date.now(), { cache: "no-store" });
   const data = await res.json();
   updateSummary(data);
-  render(data);
+  renderCalendar(data);
 }
 
 function updateSummary(data){
   const total = Number(data.settings?.annual_total || 0);
-  const used = (data.entries || []).reduce((s,e) => s + Number(e.days || 0), 0);
+  const used = (data.entries || []).reduce((s, e) => s + Number(e.days || 0), 0);
   const remain = total - used;
 
-  document.getElementById("total").innerText = fmt(total);
-  document.getElementById("used").innerText = fmt(used);
-  document.getElementById("remain").innerText = fmt(remain);
+  document.getElementById("total").textContent = fmt(total);
+  document.getElementById("used").textContent = fmt(used);
+  document.getElementById("remain").textContent = fmt(remain);
 
   const box = document.getElementById("remainBox");
   box.className = "box";
@@ -130,7 +123,7 @@ function updateSummary(data){
   else box.classList.add("red");
 }
 
-function render(data){
+function renderCalendar(data){
   const cal = document.getElementById("calendar");
   const weekdayRow = document.getElementById("weekdayRow");
   cal.innerHTML = "";
@@ -145,63 +138,63 @@ function render(data){
     weekdayRow.appendChild(div);
   });
 
-  const y = cur.getFullYear();
-  const m = cur.getMonth() + 1;
-  document.getElementById("month").innerText = `${y}-${String(m).padStart(2,"0")}`;
+  const year = current.getFullYear();
+  const month = current.getMonth() + 1;
+  document.getElementById("monthLabel").textContent = `${year}-${String(month).padStart(2,"0")}`;
 
-  const firstWday = new Date(y, m-1, 1).getDay();
-  const last = new Date(y, m, 0).getDate();
+  const firstWday = new Date(year, month - 1, 1).getDay();
+  const lastDay = new Date(year, month, 0).getDate();
   const entries = Array.isArray(data.entries) ? data.entries : [];
 
-  const halfEntryMap = new Map();
-  const fullEntryMap = new Map();
+  const halfMap = new Map();
+  const fullMap = new Map();
 
-  for(const e of entries){
-    const days = Number(e.days || 0);
+  for(const entry of entries){
+    const days = Number(entry.days || 0);
     if(days === 0.5){
-      halfEntryMap.set(String(e.date), e);
+      halfMap.set(String(entry.date), entry);
     } else if(days >= 1){
-      const expanded = expandWorkdays(String(e.date), days);
+      const expanded = expandWorkdays(String(entry.date), days);
       for(const day of expanded){
-        fullEntryMap.set(day, e);
+        fullMap.set(day, entry);
       }
     }
   }
 
-  for(let i=0; i<firstWday; i++){
+  for(let i = 0; i < firstWday; i++){
     cal.appendChild(document.createElement("div"));
   }
 
-  for(let d=1; d<=last; d++){
+  for(let day = 1; day <= lastDay; day++){
     const cell = document.createElement("div");
     cell.className = "day";
 
-    const wd = new Date(y, m-1, d).getDay();
-    if(wd === 0) cell.classList.add("sun");
-    if(wd === 6) cell.classList.add("sat");
+    const weekday = new Date(year, month - 1, day).getDay();
+    if(weekday === 0) cell.classList.add("sun");
+    if(weekday === 6) cell.classList.add("sat");
 
-    const dateStr = toYMD(y, m, d);
-    const halfEntry = halfEntryMap.get(dateStr);
-    const fullEntry = fullEntryMap.get(dateStr);
+    const dateStr = toYMD(year, month, day);
+    const halfEntry = halfMap.get(dateStr);
+    const fullEntry = fullMap.get(dateStr);
+    const memoEntry = halfEntry || fullEntry;
 
-    const memoSource = halfEntry || fullEntry;
-    cell.innerHTML = `<div class="date">${d}</div>` + (memoSource ? `<div class="memo">${memoSource.memo || ""}</div>` : "");
+    cell.innerHTML = `<div class="date">${day}</div>` + (memoEntry ? `<div class="memo">${memoEntry.memo || ""}</div>` : "");
 
     if(halfEntry){
       const half = document.createElement("div");
       half.className = "half";
       cell.appendChild(half);
     } else if(fullEntry){
-      const prev = addDaysLocal(y, m, d, -1).ymd;
-      const next = addDaysLocal(y, m, d, 1).ymd;
-      const prevHas = fullEntryMap.has(prev);
-      const nextHas = fullEntryMap.has(next);
+      const prev = addDaysLocal(year, month, day, -1).ymd;
+      const next = addDaysLocal(year, month, day, 1).ymd;
+      const prevHas = fullMap.has(prev);
+      const nextHas = fullMap.has(next);
 
       const bar = document.createElement("div");
-      if(prevHas && nextHas) bar.className = "mid";
-      else if(prevHas) bar.className = "end";
-      else if(nextHas) bar.className = "start";
-      else bar.className = "single";
+      if(prevHas && nextHas) bar.className = "bar-base bar-mid";
+      else if(prevHas) bar.className = "bar-base bar-end";
+      else if(nextHas) bar.className = "bar-base bar-start";
+      else bar.className = "bar-base bar-single";
       cell.appendChild(bar);
     }
 
@@ -209,10 +202,17 @@ function render(data){
   }
 }
 
-function prev(){ cur.setMonth(cur.getMonth() - 1); load(); }
-function next(){ cur.setMonth(cur.getMonth() + 1); load(); }
+function prevMonth(){
+  current.setMonth(current.getMonth() - 1);
+  loadData();
+}
 
-load();
+function nextMonth(){
+  current.setMonth(current.getMonth() + 1);
+  loadData();
+}
+
+loadData();
 </script>
 
 </body>
